@@ -137,10 +137,10 @@ const SignupSIgnIn = () => {
 				password : '',
 			})
 		}, 3000)
-		setsignInValues({
-			userName : '',
-			password : '',
-		})
+		// setsignInValues({
+		// 	userName : '',
+		// 	password : '',
+		// })
 	}
 
 	const handleSignUpSubmit =(event)=>{
