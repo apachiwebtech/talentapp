@@ -1,0 +1,182 @@
+@media (max-width:450px) {
+
+.ground {
+    background: #FFFFFF;
+    position: relative;
+    padding:15px 10px 15px 10px;
+    margin-bottom: 15px;
+}
+.container.all {
+    padding: 0;
+}
+#topmr ul {
+    padding: 15px 0;
+    list-style-type: none;
+}
+#topmr .aboutpara {
+    margin-top: 20px;
+}
+#topmr iframe {
+    margin-top: 20px;
+}
+#topmr ul.social {
+    margin-top: -14px;
+}
+.panel-default > .panel-heading {
+    background-color: #f83c61;
+    border-color: #f83c61;
+}
+.loginimagebg.hidden-xs{ display:none!important;}
+.mianloginpage {
+    padding: 44px 0 50px;
+}
+#sliderssssstar .col-md-12.aboutyou{ padding:0 17px;}
+#sliderssssstar .col-md-12.aboutyou h2{ padding-left:0; margin-bottom: 0;}
+.mainrightside .input-container {
+    margin-top: 5px;
+}
+.mainrightside .col-md-4 h2 {
+    padding-left: 0px;
+    margin-bottom: 0;
+}
+.winnerheading h2 {
+    font-weight: 800;
+    font-size: 14px;
+    padding: 0px;
+    color: #01d0bb;
+    /* text-transform: uppercase; */
+    margin-top: 0px;
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 15px;
+    text-align: center;
+    line-height: 20px;
+}
+.winnerimage {
+    float: none;
+    text-align: center;
+}
+.winnerimage img {
+    height: 90px;
+    border-radius: 10px;
+    width: 90px;
+}
+.winnertext {
+    width: 100%;
+    display: block;
+    margin-left: 0;
+    margin-top: 15px;
+    text-align: center;
+}
+.followonista a {
+    display: inherit;
+    color: #db9515;
+}
+.grounduser {
+    padding: 0;
+}
+.userporfileall {
+    padding: 15px 5px;
+}
+.usreimage {
+    float: none;
+    margin-bottom: 15px;
+}
+.row.reguserpro {
+    padding: 20px 10px;
+    text-align: center;
+}
+.usernamedes {
+    width: 100%;
+    float: none;
+    margin-left: 0;
+}
+img.img-circle-user {
+    width: 80px;
+    height: 80px;
+    border: 4px solid #ddd;
+    border-radius: 100%;
+}
+.usernamedes h2 {
+    font-size: 24px;
+}
+.shareprofileshare {
+    position: absolute;
+    top: -55px;
+    left: auto;
+    background: #fff;
+    padding: 10px 15px 10px 8px;
+    border-radius: 4px;
+    right: 0;
+}
+.mainpoets h2 {
+    font-size: 14px;
+    font-weight: 800;
+    margin: 4px 60px 2px;
+}
+.mainpoets span {
+    margin: 0 10px;
+}
+#contactspage .col-md-6 {
+    padding: 0;
+}
+/*.followon {
+    position: fixed;
+    bottom: 0;
+    z-index: 99;
+    background: #fff;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+.followon h3 {
+    display: inline-block;
+    margin: 16px 10px;
+}
+.followon a img {
+    margin-top: -5px;
+}*/
+#status {
+    width: 190px;
+    height: 70px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -50px 0 0 -100px;
+    background-size: 88%;
+}
+.collectoin h3 {
+    padding-bottom: 15px;
+    font-size: 22px;;
+    letter-spacing: 1px;
+}
+
+}
+
+@media(min-width:451px) and (max-width:540px) {
+
+
+}
+
+@media(min-width:541px) and (max-width:640px) {
+
+
+}
+
+@media(min-width:641px) and (max-width:768px) {
+
+
+}
+
+
+@media(min-width:769px) and (max-width:1024px) {
+
+}
+
+@media(min-width:1025px) and (max-width:1200px) {
+
+}
+
+@media(min-width : 1201px) {
+
+}

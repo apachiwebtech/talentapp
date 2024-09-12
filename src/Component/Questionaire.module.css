@@ -1,0 +1,83 @@
+.quiz-container{
+    background-color: rgb(253, 253, 253);
+    margin-top: 1rem;
+    box-sizing: border-box;
+    padding:10px 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 3px;
+    min-height: 300px;
+    overflow-y: hidden;
+    position: relative;
+}
+.active-question{
+    font-size: 32px;
+    font-weight: 500;
+    color: #e73758;
+}
+
+.total-questions{
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(98, 98, 98);
+}
+
+h2{
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.quiz-container ul{
+    margin-top: 20px;
+    margin-left: -40px;
+}
+.quiz-container ul li{
+    list-style: none;
+    font-size: 16px;
+    border: 1px solid #878787;
+    text-align: center;
+    border-radius: 30px;
+    padding: 12px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+.selectedAnswer{
+    background: #e73758;
+    border: 2px solid #e73758;
+    color:white;
+}
+
+.quiz-container .footer{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+}
+.Button{
+    background-color: #e73758;
+    border-radius: 9px;
+    color:white;
+    padding: 10px 30px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+.SecondaryButton{
+    background-color: white;
+    border-radius: 9px;
+    border: 2px solid #e73758;
+    color:#e73758;
+    padding: 10px 30px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+.Button:disabled {
+    background-color: #cdcdcd;
+    color: #878787;
+
+}
