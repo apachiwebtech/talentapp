@@ -21,10 +21,11 @@ import run from '../images/endurance.png';
 import loader from '../images/loader.gif';
 import logo from '../images/logo.png';
 import satyamimg from '../images/satyam.jpg';
-import { BASE_URL } from './BaseUrl';
+import { BASE_URL, IMG_ADVERTSIMENT_URL } from './BaseUrl';
 import DashBarProgress from './DashBarProgress';
 import Loader from './Loader';
 import { red } from '@mui/material/colors';
+import { Browser } from '@capacitor/browser';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -36,6 +37,7 @@ const Dash = () => {
   const [loading, setLoading] = useState({});
   const [proloading, setProLoading] = useState(true);
   const [post, setgetpost] = useState([]);
+  const [getaddvertsiment, setgetaddvertsiment] = useState([]);
   const [followinfo, setFollowdata] = useState([]);
   const [likedata, setlikedata] = useState([]);
   const [comlike, setcomlike] = useState([]);
@@ -48,6 +50,9 @@ const Dash = () => {
   const longPressTimeout = useRef(null);
   const [announce, setAnnounce] = useState([])
   const [prodata, setPro] = useState([])
+  const [addcount, setCount] = useState(0)
+
+  const [show, setShow] = useState(false)
 
   const handleTouchStart = (id, userid) => {
 
@@ -152,6 +157,7 @@ const Dash = () => {
 
 
 
+  let addvertsimentid = 0;
 
   async function getDatapost() {
     const data = {
@@ -161,9 +167,17 @@ const Dash = () => {
       .post(`${BASE_URL}/dash_post`, data)
       .then((res) => {
 
-        setLastid(res.data.lastPostId)
+        // console.log('API call succeeded');
+        setCount(addcount + 1)
+        // console.log('Post count:', addcount);
 
-        setgetpost((prevData) => [...prevData, ...res.data.result]);
+        setLastid(res.data.lastPostId)
+        setgetpost((prevData) => [...prevData, ...res.data.result.posts]);
+        setgetaddvertsiment(() => [ ...res.data.result.advertisements]);
+        setShow(true)
+        // if (addcount % 2 == 0) {
+        // fetchAdvertisement();
+        // }
 
       })
       .catch((err) => {
@@ -383,9 +397,20 @@ const Dash = () => {
     setProLoading(false)
   }
 
+  const gotoweb = async () => {
+    await Browser.open({
+      url: getaddvertsiment.map((item) =>
+        item.link.startsWith('http://') || item.link.startsWith('https://')
+          ? item.link
+          : `http://${item.link}`
+      )[0] // Ensure you're opening a single link
+    });
+  };
+
 
 
   return (
+
     <div className='mainDash' style={{ overflow: "hidden" }}>
       {
         prodata.map((item) => {
@@ -484,7 +509,10 @@ const Dash = () => {
       })}
 
 
+
+
       {post?.map((item, index) => {
+
         const timestampStr = item.createdDate; // Assuming item.createdDate is the timestamp string
         const timestamp = new Date(timestampStr);
 
@@ -542,345 +570,372 @@ const Dash = () => {
         return post?.data?.length === 0 ? (
           <Loader />
         ) : (
-          <div className='talent-post ' key={index}>
-            <div className='px-3 py-2 post-head d-flex align-items-center justify-content-between'>
-              <div className='d-flex align-items-center'>
-                <div className='post-img'>
-                  <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
-                    <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
-                  </SlideshowLightbox >
-                </div>
-                <Link to={`/profiledetailpage/${item.user_id}`}>
-                  <h4 className='person-name px-2'>
-                    {item.firstname} {item.lastname}
-                  </h4>
-                </Link>
-
-              </div>
-              <div onClick={() => onhandleClick(item.user_id)}>
-                <p className='follow'>{followdata.some((ele) => ele.follow_user_id === item.user_id) ? 'Following' : 'Follow'}</p>
-              </div>
-            </div>
-
-
-            <Slider {...settings}>
-              <div className='post-main-img' id='postclick' onClick={() => tapHandler(item.post_id)}>
-                {item?.post_images?.[0] && item.post_images?.[0].endsWith('.mp4') ? (
-                  <ReactPlayer url={`https://thetalentclub.co.in/upload/post_files/${item.post_images?.[0]}`} loop={false} playing={false} controls={true} playIcon={<button>Play</button>} />
-                ) : (
-                  <>
-                    {loading && <div><img src={loader} style={{ width: "70px", position: 'absolute', left: "50%", transform: "translateX(-50%)" }} alt='' /></div>}
+          <>
+            <div className='talent-post ' key={index}>
+              <div className='px-3 py-2 post-head d-flex align-items-center justify-content-between'>
+                <div className='d-flex align-items-center'>
+                  <div className='post-img'>
                     <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
-                      <img
-                        src={`https://thetalentclub.co.in/upload/post_files/${item?.post_images?.[0]}`}
-                        alt=''
-                        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-                        onLoad={() => handleImageLoad(index)}
-
-
-                      />
-                    </SlideshowLightbox>
-
-                  </>
-                )}
-              </div>
-              {item.post_images.slice(1).map((item, index) => {
-                return (
-                  <div className='post-main-img' id='postclick' key={index}>
-                    {loading && <div><img src={loader} style={{ width: "70px", position: 'absolute', left: "50%", transform: "translateX(-50%)" }} alt='' /></div>}
-                    <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
-                      <img
-                        src={`https://thetalentclub.co.in/upload/post_files/${item}`}
-                        alt=''
-                        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-                        onLoad={() => handleImageLoad(index)}
-                      />
-                    </SlideshowLightbox>
+                      <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
+                    </SlideshowLightbox >
                   </div>
-                );
-              })}
-            </Slider>
+                  <Link to={`/profiledetailpage/${item.user_id}`}>
+                    <h4 className='person-name px-2'>
+                      {item.firstname} {item.lastname}
+                    </h4>
+                  </Link>
+
+                </div>
+                <div onClick={() => onhandleClick(item.user_id)}>
+                  <p className='follow'>{followdata.some((ele) => ele.follow_user_id === item.user_id) ? 'Following' : 'Follow'}</p>
+                </div>
+              </div>
 
 
+              <Slider {...settings}>
+                <div className='post-main-img' id='postclick' onClick={() => tapHandler(item.post_id)}>
+                  {item?.post_images?.[0] && item.post_images?.[0].endsWith('.mp4') ? (
+                    <ReactPlayer url={`https://thetalentclub.co.in/upload/post_files/${item.post_images?.[0]}`} loop={false} playing={false} controls={true} playIcon={<button>Play</button>} />
+                  ) : (
+                    <>
+                      {loading && <div><img src={loader} style={{ width: "70px", position: 'absolute', left: "50%", transform: "translateX(-50%)" }} alt='' /></div>}
+                      <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
+                        <img
+                          src={`https://thetalentclub.co.in/upload/post_files/${item?.post_images?.[0]}`}
+                          alt=''
+                          style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                          onLoad={() => handleImageLoad(index)}
 
 
-            <div className='click-like' id='class1' style={{ display: 'none' }}>
-              <i className='ri-trophy-fill mx-2 text-danger'></i>
-            </div>
-            <div className='click-dislike' id='class2' style={{ display: 'none' }}>
-              <i className='ri-trophy-line mx-2 text-danger'></i>
-            </div>
+                        />
+                      </SlideshowLightbox>
 
-            <div className=' '>
-              {likecount?.filter(ele => ele.post_id === item.post_id)
-                .map(filteredLike => {
+                    </>
+                  )}
+                </div>
+                {item.post_images.slice(1).map((item, index) => {
                   return (
-                    <div key={filteredLike.post_id}>
-                      {filteredLike.like_count !== null ? (
-                        <p className='like-count' onClick={() => onhandlelikeuser(item.post_id)} type='button' data-bs-toggle='modal' data-bs-target='#exampleModal2'>
-
-                          {filteredLike.like_count}  <i className='ri-trophy-fill'></i>
-                        </p>
-                      ) : (
-                        <p className='like-count'>
-
-                          0 <i className='ri-trophy-line'></i>
-                        </p>
-                      )}
+                    <div className='post-main-img' id='postclick' key={index}>
+                      {loading && <div><img src={loader} style={{ width: "70px", position: 'absolute', left: "50%", transform: "translateX(-50%)" }} alt='' /></div>}
+                      <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
+                        <img
+                          src={`https://thetalentclub.co.in/upload/post_files/${item}`}
+                          alt=''
+                          style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                          onLoad={() => handleImageLoad(index)}
+                        />
+                      </SlideshowLightbox>
                     </div>
                   );
                 })}
-
-              <div className='post-activity py-1 d-flex justify-content-between align-items-center'>
-                <div>
-                  <i className={likedata.some((ele) => ele.post_id === item.post_id) ? 'ri-trophy-fill mx-2' : 'ri-trophy-line mx-2'} id='like1' onClick={() => handleLike(item.post_id)}></i>
-
-                  <i
-                    className='ri-chat-1-line mx-2'
-                    onClick={() => dispatch(getCount(item.post_id))}
-                    type='button'
-                    data-bs-toggle='modal'
-                    data-bs-target='#exampleModal'
-
-                  > </i>
-                </div>
-                <div>
-                  {likecount?.filter(ele => ele.post_id === item.post_id)
-                    .map(filteredLike => {
-                      return (
-                        <span key={filteredLike.post_id} className='px-2'>
-                          {filteredLike.comment_count !== null ? (
-                            <span className='like-count' style={{ fontSize: "15px" }} type='button' data-bs-toggle='modal' data-bs-target='#exampleModal2'>
-                              {filteredLike.comment_count} comment
-                            </span>
-                          ) : (
-                            <span className='like-count'>
-
-                              No comment
-                            </span>
-                          )}
-                        </span>
-                      );
-                    })}
-                </div>
+              </Slider>
 
 
 
+
+              <div className='click-like' id='class1' style={{ display: 'none' }}>
+                <i className='ri-trophy-fill mx-2 text-danger'></i>
+              </div>
+              <div className='click-dislike' id='class2' style={{ display: 'none' }}>
+                <i className='ri-trophy-line mx-2 text-danger'></i>
               </div>
 
+              <div className=' '>
+                {likecount?.filter(ele => ele.post_id === item.post_id)
+                  .map(filteredLike => {
+                    return (
+                      <div key={filteredLike.post_id}>
+                        {filteredLike.like_count !== null ? (
+                          <p className='like-count' onClick={() => onhandlelikeuser(item.post_id)} type='button' data-bs-toggle='modal' data-bs-target='#exampleModal2'>
 
-              <div className='px-2 py-2' style={{ width: "350px", overflow: "scroll" }}>
-                <p className='post-title m-0 py-1'>
-                  <b>{item.title}</b>
-                </p>
-                {item.description.includes('#') ? (
-                  renderClickableText(item.description)
-                ) : (
-                  <p className='item-desc' >{item.description}</p>
-                )}
+                            {filteredLike.like_count}  <i className='ri-trophy-fill'></i>
+                          </p>
+                        ) : (
+                          <p className='like-count'>
 
-                <p style={{ fontSize: "12px" }}>{item.createdDate == null ? "--" : formattedDate}</p>
+                            0 <i className='ri-trophy-line'></i>
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
 
-              </div>
-            </div>
+                <div className='post-activity py-1 d-flex justify-content-between align-items-center'>
+                  <div>
+                    <i className={likedata.some((ele) => ele.post_id === item.post_id) ? 'ri-trophy-fill mx-2' : 'ri-trophy-line mx-2'} id='like1' onClick={() => handleLike(item.post_id)}></i>
 
-            <div className='modal fade' id='exampleModal2' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
-              <div className='modal-dialog modal-dialog-centered'>
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                    <h1 className='modal-title fs-5' id='exampleModalLabel'>
-                      User Like
-                    </h1>
-                    <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close' onClick={handleClose}></button>
-                  </div>
-                  <div className='modal-body2 p-2'>
-                    {userlike?.data?.map((item, index) => {
-                      return (
-                        <div className='d-flex align-items-center py-1' key={index}>
-                          <div className='post-img'>
-                            <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
-                          </div>
-                          <h4 className='person-name px-2'>
-                            {item.firstname} {item.lastname}
-                          </h4>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className='modal fade' id='exampleModal' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
-              <div className='modal-dialog modal-fullscreen'>
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                    <h1 className='modal-title fs-5' id='exampleModalLabel'>
-                      Comments &nbsp;({count.length})
-                    </h1>
-                    <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close' onClick={onhandleclose}></button>
-                  </div>
-
-                  <div className='modal-body' style={{ padding: "0px 10px" }}  >
-                    {count?.map((item, index) => {
-                      return (
-                        <div key={index}>
-
-                          <div className={`comment-box d-flex align-items-center justify-content-between my-2 ${animate === item.id ? 'animate__animated animate__fadeOutRight' : ''} ${clickedItemId === item.id ? 'bg-lightblue' : ''}`} key={index} >
-                            <button className='delete-ovr' onTouchEnd={handleTouchEnd} onTouchStart={() => handleTouchStart(item.id, item.user_id)}>Touch</button>
-                            <div>
-                              <p className='name-text'>
-                                {' '}
-                                {item.firstname} {item.lastname}
-                              </p>
-                              <p className='comment'>{item.comment}</p>
-                            </div>
-
-                            <div className='d-flex'>
-                              <div>
-                                <i
-                                  className={comlike.some((ele) => ele.comment_id === item.id) ? 'ri-thumb-up-fill' : 'ri-thumb-up-line'}
-                                  onClick={() => {
-                                    const selectComment_id = item.id;
-
-
-                                    const data = {
-                                      comment_id: selectComment_id,
-                                      user_id: localStorage.getItem('user_id'),
-                                    };
-                                    if (comlike.some((ele) => ele.comment_id === selectComment_id)) {
-                                      axios.post(`${BASE_URL}/comment_like_delete`, data)
-                                        .then((res) => {
-                                          dispatch(getCount(item.post_id))
-                                          getcommentlikeData()
-                                        })
-                                    } else {
-                                      axios.post(`${BASE_URL}/comment_like`, data)
-                                        .then((res) => {
-                                          dispatch(getCount(item.post_id))
-                                          getcommentlikeData()
-                                        });
-                                    }
-
-                                  }}
-                                ></i>
-                                <span className='fw-bold'>
-                                  <span>{item.like_count} </span>Like
-                                </span>
-                              </div>
-                              <div className='mx-2'>
-                                <i className='ri-reply-line'></i>
-                                <span className='fw-bold'>Reply</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className={`delete-btn text-center ${animate === item.id ? 'animate__animated animate__fadeOutRight' : ''} ${clickedItemId === item.id ? 'delete-trans' : ''}`} style={{ height: "30px", display: "none" }} id={`del-box${item.id}`} >
-
-                            <i className="ri-delete-bin-5-line text-light" onClick={() => {
-                              setAnimate((prevId) => (prevId === item.id ? null : item.id));
-                              const data = {
-                                comment_id: item.id
-                              }
-                              axios.post(`${BASE_URL}/delete_user_comment`, data)
-                                .then((res) => {
-                                  dispatch(getCount(currentPostId))
-                                  getlikeCount()
-                                })
-                                .catch((err) => {
-                                  console.log(err)
-                                })
-                            }}></i>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className='modal-footer' style={{ display: 'block', position: 'relative' }}>
-                    <input type='text' placeholder='...' name='comment' value={value.comment} onChange={onhandlechange} />
                     <i
-                      className='ri-send-plane-2-line sent'
-                      onClick={() => {
-                        if (currentPostId !== null) {
-                          const data = {
-                            user_id: localStorage.getItem('user_id'),
-                            post_id: currentPostId, // Use the currentPostId
-                            comment: value.comment,
-                          };
-                          axios
-                            .post(`${BASE_URL}/add_comment`, data)
-                            .then((res) => {
-                              dispatch(getCount(currentPostId))
-                              getlikeCount()
-                            })
-                            .catch((err) => {
-                              console.log(err);
-                            });
-                        }
-                        setvalue({
-                          comment: ""
-                        })
+                      className='ri-chat-1-line mx-2'
+                      onClick={() => dispatch(getCount(item.post_id))}
+                      type='button'
+                      data-bs-toggle='modal'
+                      data-bs-target='#exampleModal'
 
-                      }}
-                    ></i>
+                    > </i>
                   </div>
+                  <div>
+                    {likecount?.filter(ele => ele.post_id === item.post_id)
+                      .map(filteredLike => {
+                        return (
+                          <span key={filteredLike.post_id} className='px-2'>
+                            {filteredLike.comment_count !== null ? (
+                              <span className='like-count' style={{ fontSize: "15px" }} type='button' data-bs-toggle='modal' data-bs-target='#exampleModal2'>
+                                {filteredLike.comment_count} comment
+                              </span>
+                            ) : (
+                              <span className='like-count'>
+
+                                No comment
+                              </span>
+                            )}
+                          </span>
+                        );
+                      })}
+                  </div>
+
 
 
                 </div>
-              </div>
-            </div>
 
-            <div className='modal fade' id='exampleModal1' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
-              <div className='modal-dialog modal-dialog-centered'>
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                    <h1 className='modal-title fs-5' id='exampleModalLabel'>
-                      Share With
-                    </h1>
-                    <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-                  </div>
-                  <div className='modal-body'>
-                    <div className='social-share d-flex justify-content-between'>
-                      <div className='soc-d'>
-                        <i className='ri-whatsapp-line'></i>
-                      </div>
-                      <div className='soc-d'>
-                        <i className='ri-instagram-line'></i>
-                      </div>
-                      <div className='soc-d'>
-                        <i className='ri-twitter-line'></i>
-                      </div>
-                      <div className='soc-d'>
-                        <i className='ri-facebook-line'></i>
-                      </div>
-                      <div className='soc-d'>
-                        <i className='ri-attachment-line'></i>
-                      </div>
+
+                <div className='px-2 py-2' style={{ width: "350px", overflow: "scroll" }}>
+                  <p className='post-title m-0 py-1'>
+                    <b>{item.title}</b>
+                  </p>
+                  {item.description.includes('#') ? (
+                    renderClickableText(item.description)
+                  ) : (
+                    <p className='item-desc' >{item.description}</p>
+                  )}
+
+                  <p style={{ fontSize: "12px" }}>{item.createdDate == null ? "--" : formattedDate}</p>
+
+                </div>
+              </div>
+
+              <div className='modal fade' id='exampleModal2' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+                <div className='modal-dialog modal-dialog-centered'>
+                  <div className='modal-content'>
+                    <div className='modal-header'>
+                      <h1 className='modal-title fs-5' id='exampleModalLabel'>
+                        User Like
+                      </h1>
+                      <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close' onClick={handleClose}></button>
+                    </div>
+                    <div className='modal-body2 p-2'>
+                      {userlike?.data?.map((item, index) => {
+                        return (
+                          <div className='d-flex align-items-center py-1' key={index}>
+                            <div className='post-img'>
+                              <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
+                            </div>
+                            <h4 className='person-name px-2'>
+                              {item.firstname} {item.lastname}
+                            </h4>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                  <div className='modal-footer' style={{ display: 'block', position: 'relative' }}>
-                    <input type='text' placeholder='Search' />
-                    <div className='Sharelist row align-items-center my-3'>
-                      <div className='col-2'>
-                        <div className='post-img'>
-                          <img src={satyamimg} alt='' />
+                </div>
+              </div>
+
+              <div className='modal fade' id='exampleModal' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+                <div className='modal-dialog modal-fullscreen'>
+                  <div className='modal-content'>
+                    <div className='modal-header'>
+                      <h1 className='modal-title fs-5' id='exampleModalLabel'>
+                        Comments &nbsp;({count.length})
+                      </h1>
+                      <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close' onClick={onhandleclose}></button>
+                    </div>
+
+                    <div className='modal-body' style={{ padding: "0px 10px" }}  >
+                      {count?.map((item, index) => {
+                        return (
+                          <div key={index}>
+
+                            <div className={`comment-box d-flex align-items-center justify-content-between my-2 ${animate === item.id ? 'animate__animated animate__fadeOutRight' : ''} ${clickedItemId === item.id ? 'bg-lightblue' : ''}`} key={index} >
+                              <button className='delete-ovr' onTouchEnd={handleTouchEnd} onTouchStart={() => handleTouchStart(item.id, item.user_id)}>Touch</button>
+                              <div>
+                                <p className='name-text'>
+                                  {' '}
+                                  {item.firstname} {item.lastname}
+                                </p>
+                                <p className='comment'>{item.comment}</p>
+                              </div>
+
+                              <div className='d-flex'>
+                                <div>
+                                  <i
+                                    className={comlike.some((ele) => ele.comment_id === item.id) ? 'ri-thumb-up-fill' : 'ri-thumb-up-line'}
+                                    onClick={() => {
+                                      const selectComment_id = item.id;
+
+
+                                      const data = {
+                                        comment_id: selectComment_id,
+                                        user_id: localStorage.getItem('user_id'),
+                                      };
+                                      if (comlike.some((ele) => ele.comment_id === selectComment_id)) {
+                                        axios.post(`${BASE_URL}/comment_like_delete`, data)
+                                          .then((res) => {
+                                            dispatch(getCount(item.post_id))
+                                            getcommentlikeData()
+                                          })
+                                      } else {
+                                        axios.post(`${BASE_URL}/comment_like`, data)
+                                          .then((res) => {
+                                            dispatch(getCount(item.post_id))
+                                            getcommentlikeData()
+                                          });
+                                      }
+
+                                    }}
+                                  ></i>
+                                  <span className='fw-bold'>
+                                    <span>{item.like_count} </span>Like
+                                  </span>
+                                </div>
+                                <div className='mx-2'>
+                                  <i className='ri-reply-line'></i>
+                                  <span className='fw-bold'>Reply</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className={`delete-btn text-center ${animate === item.id ? 'animate__animated animate__fadeOutRight' : ''} ${clickedItemId === item.id ? 'delete-trans' : ''}`} style={{ height: "30px", display: "none" }} id={`del-box${item.id}`} >
+
+                              <i className="ri-delete-bin-5-line text-light" onClick={() => {
+                                setAnimate((prevId) => (prevId === item.id ? null : item.id));
+                                const data = {
+                                  comment_id: item.id
+                                }
+                                axios.post(`${BASE_URL}/delete_user_comment`, data)
+                                  .then((res) => {
+                                    dispatch(getCount(currentPostId))
+                                    getlikeCount()
+                                  })
+                                  .catch((err) => {
+                                    console.log(err)
+                                  })
+                              }}></i>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className='modal-footer' style={{ display: 'block', position: 'relative' }}>
+                      <input type='text' placeholder='...' name='comment' value={value.comment} onChange={onhandlechange} />
+                      <i
+                        className='ri-send-plane-2-line sent'
+                        onClick={() => {
+                          if (currentPostId !== null) {
+                            const data = {
+                              user_id: localStorage.getItem('user_id'),
+                              post_id: currentPostId, // Use the currentPostId
+                              comment: value.comment,
+                            };
+                            axios
+                              .post(`${BASE_URL}/add_comment`, data)
+                              .then((res) => {
+                                dispatch(getCount(currentPostId))
+                                getlikeCount()
+                              })
+                              .catch((err) => {
+                                console.log(err);
+                              });
+                          }
+                          setvalue({
+                            comment: ""
+                          })
+
+                        }}
+                      ></i>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+
+              <div className='modal fade' id='exampleModal1' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+                <div className='modal-dialog modal-dialog-centered'>
+                  <div className='modal-content'>
+                    <div className='modal-header'>
+                      <h1 className='modal-title fs-5' id='exampleModalLabel'>
+                        Share With
+                      </h1>
+                      <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                    </div>
+                    <div className='modal-body'>
+                      <div className='social-share d-flex justify-content-between'>
+                        <div className='soc-d'>
+                          <i className='ri-whatsapp-line'></i>
+                        </div>
+                        <div className='soc-d'>
+                          <i className='ri-instagram-line'></i>
+                        </div>
+                        <div className='soc-d'>
+                          <i className='ri-twitter-line'></i>
+                        </div>
+                        <div className='soc-d'>
+                          <i className='ri-facebook-line'></i>
+                        </div>
+                        <div className='soc-d'>
+                          <i className='ri-attachment-line'></i>
                         </div>
                       </div>
+                    </div>
+                    <div className='modal-footer' style={{ display: 'block', position: 'relative' }}>
+                      <input type='text' placeholder='Search' />
+                      <div className='Sharelist row align-items-center my-3'>
+                        <div className='col-2'>
+                          <div className='post-img'>
+                            <img src={satyamimg} alt='' />
+                          </div>
+                        </div>
 
-                      <div className='px-2 col-7'>
-                        <h4 className='person-name m-0'>{loggeduser}</h4>
-                        <p className='user_name m-0'>happiest</p>
-                      </div>
-                      <div className='col-3'>
-                        <button className='send-btn'>Send</button>
+                        <div className='px-2 col-7'>
+                          <h4 className='person-name m-0'>{loggeduser}</h4>
+                          <p className='user_name m-0'>happiest</p>
+                        </div>
+                        <div className='col-3'>
+                          <button className='send-btn'>Send</button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+            {index % 5 == 0 ? (
+              <div className="talent-post"
+                onClick={gotoweb}
+              >
+                {/* <SlideshowLightbox iconColor="#000" backgroundColor='#fff'> */}
+                {/* <Link to={`${getaddvertsiment.map((item) => item.link)}`}> */}
+                <img
+                  src={`${IMG_ADVERTSIMENT_URL}${getaddvertsiment.map((item) => item.image_path)}`}
+                  alt=''
+                  style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+                  onLoad={() => handleImageLoad(index)}
+
+                />
+                {/* </Link> */}
+                {/* </SlideshowLightbox> */}
+              </div>
+
+            ) : null
+              // setShow(false)
+            }
+          </>
         );
+
       })}
+
+
+
+
     </div>
   );
 };
