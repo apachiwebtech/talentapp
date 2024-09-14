@@ -106,7 +106,7 @@ const Dash = () => {
   const handleScroll = _debounce(() => {
     const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
 
-    if (scrollTop + clientHeight >= scrollHeight - 100) {
+    if (scrollTop + clientHeight >= scrollHeight - 1000) {
       getDatapost();
 
     }

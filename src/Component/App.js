@@ -46,7 +46,8 @@ import Policy from './Policy';
 import Terms from './Terms';
 // import ProfileDetailPage from './ProfileDetailPage';
 // import PostlistingPage from './PostlistingPage';
-import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
+// import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 const Dash = lazy(() => import('./Dash'));
 const MyClub = lazy(() => import('./MyClub'));
 const GroupPost = lazy(() => import('./GroupPost'));
@@ -256,8 +257,12 @@ const Routing = createBrowserRouter([
 // }
 
 
-const portrait = async () => {
-  await ScreenOrientation.lock({ type: OrientationType.PORTRAIT });
+const lockToPortrait = async () => {
+  try {
+    await ScreenOrientation.lock({ orientation: 'portrait' });
+  } catch (error) {
+    console.error('Failed to lock screen orientation:', error);
+  }
 };
 
 function MobApp() {
@@ -267,7 +272,7 @@ const [loader , setLoader] = useState(true)
 
   useEffect(() => {
 
-    portrait()
+    lockToPortrait();
 
     // const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     // if (!isMobileDevice) {
