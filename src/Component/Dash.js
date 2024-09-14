@@ -172,8 +172,8 @@ const Dash = () => {
         // console.log('Post count:', addcount);
 
         setLastid(res.data.lastPostId)
-        setgetpost((prevData) => [...prevData, ...res.data.result.posts]);
-        setgetaddvertsiment(() => [ ...res.data.result.advertisements]);
+        setgetpost((prevData) => [...prevData, ...res.data.result]);
+        setgetaddvertsiment(() => [ ...res.data.advertisements]);
         setShow(true)
         // if (addcount % 2 == 0) {
         // fetchAdvertisement();
