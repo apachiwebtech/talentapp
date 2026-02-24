@@ -419,16 +419,103 @@ const Dash = () => {
           return (
             <div className='headerWrapper' >
               <div className='userpart d-flex align-items-center justify-content-between' >
-                <div className='logo-img'>
+                {/* <div className='logo-img'>
                   {proloading && <div><img src={loader} alt='' /></div>}
                   <img src={profile_img === '' ? img : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} alt='profile' onClick={togglePopup} onLoad={handleProLoad} />
-                </div>
+                </div> */}
+                <div className="logo-img" style={{ position: "relative", width: 40, height: 40 }}>
+  {/* LOADER — only when image exists AND loading */}
+  {proloading && item?.profile_image?.trim() && (
+    <div>
+      <img src={loader} alt="" />
+    </div>
+  )}
+
+  {/* PROFILE IMAGE */}
+  {item?.profile_image?.trim() && (
+    <img
+      src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+      alt="profile"
+      onClick={togglePopup}
+      onLoad={() => setProLoading(false)}
+      onError={(e) => {
+        setProLoading(false);
+        e.target.style.display = "none";
+      }}
+      style={{
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        objectFit: "cover"
+      }}
+    />
+  )}
+
+  {/* INITIALS — only when NO image */}
+  {!item?.profile_image?.trim() && (
+    <div
+      onClick={togglePopup}
+      style={{
+        width: "40px",
+        height: "40px",
+        borderRadius: "50%",
+        background: "#0d6efd",
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: 600,
+        fontSize: "14px",
+        textTransform: "uppercase",
+        cursor: "pointer"
+      }}
+    >
+      {(item?.firstname?.charAt(0) || "") +
+        (item?.lastname?.charAt(0) || "") || "U"}
+    </div>
+  )}
+</div>
                 {showPopup && (
                   <div className="popup34">
                     <span className="close" onClick={togglePopup}>
                       &times;
                     </span>
-                    <img src={profile_img === '' ? img : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} alt='profile' />
+                    {/* <img src={profile_img === '' ? img : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} alt='profile' /> */}
+                    {item?.profile_image?.trim() ? (
+  <img
+    src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+    alt="profile"
+    onError={(e) => {
+      e.target.style.display = "none";
+      e.target.nextSibling.style.display = "flex";
+    }}
+    style={{
+      width: "40px",
+      height: "40px",
+      borderRadius: "50%",
+      objectFit: "cover"
+    }}
+  />
+) : null}
+
+<div
+  style={{
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    background: "#0d6efd",
+    color: "#fff",
+    display: item?.profile_image?.trim() ? "none" : "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: 600,
+    fontSize: "14px",
+    textTransform: "uppercase"
+  }}
+>
+  {(item?.firstname?.charAt(0) || "") +
+    (item?.lastname?.charAt(0) || "") || "U"}
+</div>
                     {/* Add additional profile information or content here */}
                   </div>
                 )}
@@ -512,6 +599,16 @@ const Dash = () => {
 
 
       {post?.map((item, index) => {
+        const hasImage = item?.profile_image?.trim();
+
+const getInitials = (first, last) => {
+  const f = first?.charAt(0) || "";
+  const l = last?.charAt(0) || "";
+  const letters = (f + l).toUpperCase();
+  return letters || "U";
+};
+
+const initials = getInitials(item.firstname, item.lastname);
 
         const timestampStr = item.createdDate; // Assuming item.createdDate is the timestamp string
         const timestamp = new Date(timestampStr);
@@ -574,11 +671,52 @@ const Dash = () => {
             <div className='talent-post ' key={index}>
               <div className='px-3 py-2 post-head d-flex align-items-center justify-content-between'>
                 <div className='d-flex align-items-center'>
-                  <div className='post-img'>
+                  {/* <div className='post-img'>
                     <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
                       <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
                     </SlideshowLightbox >
-                  </div>
+                  </div> */}
+                  <div className="post-img" style={{ width: 50, height: 50 }}>
+  {item?.profile_image?.trim() ? (
+    <SlideshowLightbox iconColor="#000" backgroundColor="#fff">
+      <img
+        src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+        alt="profile"
+        width="50"
+        height="50"
+        className="rounded-circle"
+        style={{ objectFit: "cover" }}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.style.display = "none";
+          e.target.parentElement.nextSibling.style.display = "flex";
+        }}
+      />
+    </SlideshowLightbox>
+  ) : null}
+
+  {/* ✅ INITIALS — OUTSIDE LIGHTBOX */}
+  <div
+    style={{
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      background: "#0d6efd",
+      color: "#fff",
+      display: item?.profile_image?.trim() ? "none" : "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: 600,
+      fontSize: "16px",
+      textTransform: "uppercase"
+    }}
+  >
+    {(
+      (item?.firstname?.charAt(0) || "") +
+      (item?.lastname?.charAt(0) || "")
+    ) || "U"}
+  </div>
+</div>
                   <Link to={`/profiledetailpage/${item.user_id}`}>
                     <h4 className='person-name px-2'>
                       {item.firstname} {item.lastname}

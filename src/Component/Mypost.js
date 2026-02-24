@@ -12,6 +12,7 @@ import satyamimg from '../images/satyam.jpg';
 import { BASE_URL } from './BaseUrl';
 import Slider from 'react-slick';
 import { SlideshowLightbox } from 'lightbox.js-react';
+import Avatar from "@mui/material/Avatar";
 import { LinearProgress } from '@mui/material';
 import _debounce from 'lodash.debounce';
 import { useDispatch, useSelector } from 'react-redux';
@@ -218,6 +219,17 @@ export const Mypost = () => {
   return (
     <div className='mainDash'>
       {post?.data?.map((item, index) => {
+        const hasImage = item?.profile_image?.trim();
+
+const getInitials = (name) => {
+  if (!name) return "U";
+  const parts = name.trim().split(" ");
+  return parts.length === 1
+    ? parts[0][0].toUpperCase()
+    : (parts[0][0] + parts[1][0]).toUpperCase();
+};
+
+const initials = getInitials(item.name || `${item.firstname || ""} ${item.lastname || ""}`);
         const handleWordClick = (word) => {
           // Define the logic for handling clicks based on the clicked word
           console.log(`Clicked on: ${word}`);
@@ -281,7 +293,33 @@ export const Mypost = () => {
               <div className='d-flex align-items-center'>
                 <div className='post-img'>
                   <SlideshowLightbox iconColor="#000" backgroundColor='#fff' >
-                    <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
+                    {/* <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' /> */}
+            {hasImage ? (
+  <img
+    src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+    alt="profile"
+    width="45"
+    height="45"
+    className="rounded-circle"
+    style={{ objectFit: "cover" }}
+    onError={(e) => {
+      e.target.style.display = "none";
+      e.target.nextSibling.style.display = "flex";
+    }}
+  />
+) : null}
+
+<Avatar
+  sx={{
+    width: 45,
+    height: 45,
+    fontSize: 16,
+    bgcolor: "#1976d2",
+    display: hasImage ? "none" : "flex"
+  }}
+>
+  {initials}
+</Avatar>
                   </SlideshowLightbox>
                 </div>
 
