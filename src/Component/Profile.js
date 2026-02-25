@@ -1,44 +1,40 @@
-import CloseIcon from '@mui/icons-material/Close';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import FormControl from '@mui/material/FormControl';
-import loader from '../images/loader.gif';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Slide from '@mui/material/Slide';
-import TextField from '@mui/material/TextField';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import CloseIcon from "@mui/icons-material/Close";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import FormControl from "@mui/material/FormControl";
+import loader from "../images/loader.gif";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import IconButton from "@mui/material/IconButton";
+import MenuItem from "@mui/material/MenuItem";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import Slide from "@mui/material/Slide";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { BASE_URL } from './BaseUrl';
-import imageCompression from 'browser-image-compression';
-import { LinearProgress } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import Loader from './Loader';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { BASE_URL } from "./BaseUrl";
+import imageCompression from "browser-image-compression";
+import { LinearProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import Loader from "./Loader";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction='up' ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
-
-
-
-
 
 const Profile = () => {
   const [values, setValues] = useState({
-    image: '',
-    user_id: localStorage.getItem('user_id'),
+    image: "",
+    user_id: localStorage.getItem("user_id"),
   });
   const [getfollow, setFollow] = useState([]);
   const [follower, setFollower] = useState([]);
@@ -47,81 +43,78 @@ const Profile = () => {
   const [image, setImage] = useState(null);
   const [open, setOpen] = useState(false);
   const [commonerr, setCommonerr] = useState("");
-  const [progress, setprogress] = useState(false)
-  const [prodata, setPro] = useState([])
+  const [progress, setprogress] = useState(false);
+  const [prodata, setPro] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [detail, setDetails] = useState({
-    firstname: '',
-    lastname: '',
-    designation: '',
-    date: '',
-    address: '',
-    gender: '',
-    user_id: localStorage.getItem('user_id')
-
-
-  })
+    firstname: "",
+    lastname: "",
+    designation: "",
+    date: "",
+    address: "",
+    gender: "",
+    bio: "",
+    user_id: localStorage.getItem("user_id"),
+  });
 
   const [error, setErrors] = useState({
-    firstname: '',
-    lastname: '',
-    designation: '',
-    address: '',
+    firstname: "",
+    lastname: "",
+    designation: "",
+    address: "",
     // date: '',
     // gender: '',
-  })
-
+  });
 
   const Designation = [
     {
-      value: 'Select',
-      label: 'Select Designation',
+      value: "Select",
+      label: "Select Designation",
     },
     {
-      value: 'Student',
-      label: 'Student',
+      value: "Student",
+      label: "Student",
     },
     {
-      value: 'Homemakers',
-      label: 'Homemakers',
+      value: "Homemakers",
+      label: "Homemakers",
     },
     {
-      value: 'Senior Citizens',
-      label: 'Senior Citizens',
+      value: "Senior Citizens",
+      label: "Senior Citizens",
     },
     {
-      value: 'Agriculturist',
-      label: 'Agriculturist',
+      value: "Agriculturist",
+      label: "Agriculturist",
     },
     {
-      value: 'Propriters',
-      label: 'Propriters',
+      value: "Propriters",
+      label: "Propriters",
     },
     {
-      value: 'Professionals',
-      label: 'Professionals',
+      value: "Professionals",
+      label: "Professionals",
     },
     {
-      value: 'Other',
-      label: 'Other',
+      value: "Other",
+      label: "Other",
     },
   ];
 
-
   const gender = [
     {
-      value: 'Male',
-      label: 'Male',
+      value: "Male",
+      label: "Male",
     },
     {
-      value: 'Female',
-      label: 'Female',
+      value: "Female",
+      label: "Female",
     },
     {
-      value: 'Other',
-      label: 'Other',
+      value: "Other",
+      label: "Other",
     },
-  ]
+  ];
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -131,14 +124,14 @@ const Profile = () => {
     setOpen(false);
   };
 
-  async function proflepost() { }
+  async function proflepost() {}
   useEffect(() => {
     proflepost();
   }, []);
 
   useEffect(() => {
     const data = {
-      user_id: localStorage.getItem('user_id'),
+      user_id: localStorage.getItem("user_id"),
     };
 
     async function getfollowing() {
@@ -154,15 +147,10 @@ const Profile = () => {
     getfollowing();
   }, []);
 
-
-
-
   useEffect(() => {
     const data = {
-      user_id: localStorage.getItem('user_id'),
+      user_id: localStorage.getItem("user_id"),
     };
-
-
 
     async function getPosts() {
       axios
@@ -177,36 +165,33 @@ const Profile = () => {
     getPosts();
   }, []);
 
-
   async function getProfiledata() {
-
     const data = {
-      user_id: localStorage.getItem("user_id")
-    }
-    axios.post(`${BASE_URL}/profile_data`, data)
+      user_id: localStorage.getItem("user_id"),
+    };
+    axios
+      .post(`${BASE_URL}/profile_data`, data)
       .then((res) => {
-        setPro(res.data)
+        setPro(res.data);
       })
       .catch((err) => {
-        console.log(err)
-      })
+        console.log(err);
+      });
   }
 
   useEffect(() => {
-    getProfiledata()
-  }, [])
+    getProfiledata();
+  }, []);
 
   function formatDateToYYYYMMDD(inputDate) {
     const date = new Date(inputDate);
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = date.toISOString().split("T")[0];
     return formattedDate;
   }
 
-
-
   useEffect(() => {
     const data = {
-      user_id: localStorage.getItem('user_id'),
+      user_id: localStorage.getItem("user_id"),
     };
 
     async function getfollower() {
@@ -222,7 +207,6 @@ const Profile = () => {
     getfollower();
   }, []);
 
-
   async function ImageBase64(file) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -235,11 +219,9 @@ const Profile = () => {
     return data;
   }
 
-
-
   async function handleImageUpload(event) {
     const file = event.target.files[0];
-    setHide(true)
+    setHide(true);
 
     const data = await ImageBase64(event.target.files[0]);
     setValues((prev) => {
@@ -249,15 +231,15 @@ const Profile = () => {
       };
     });
     // Check if the file has a valid extension
-    const allowedExtensions = ['png', 'jpg', 'jpeg', 'mp4'];
-    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const allowedExtensions = ["png", "jpg", "jpeg", "mp4"];
+    const fileExtension = file.name.split(".").pop().toLowerCase();
     if (!allowedExtensions.includes(fileExtension)) {
       // console.log('Invalid file type. Please upload a .png, .jpg, or .mp4 file.');
       return;
     }
 
     console.log(file, "jhsd");
-    console.log('file instanceof Blob', file instanceof Blob); // true
+    console.log("file instanceof Blob", file instanceof Blob); // true
     console.log(`file size ${file.size / 1024 / 1024} MB`);
 
     const options = {
@@ -269,22 +251,28 @@ const Profile = () => {
     try {
       let convertedFile;
 
-      if (fileExtension === 'mp4') {
-        setImage(file)
+      if (fileExtension === "mp4") {
+        setImage(file);
       } else {
         // Handle image file using imageCompression library
         const compressedFile = await imageCompression(file, options);
         console.log("nbchjvbhj");
         console.log(compressedFile);
-        console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-        console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+        console.log(
+          "compressedFile instanceof Blob",
+          compressedFile instanceof Blob,
+        ); // true
+        console.log(
+          `compressedFile size ${compressedFile.size / 1024 / 1024} MB`,
+        ); // smaller than maxSizeMB
 
         // Convert Blob to File with the desired extension
         const fileName = `compressedFile.${fileExtension}`;
-        convertedFile = new File([compressedFile], fileName, { type: `image/${fileExtension}` });
+        convertedFile = new File([compressedFile], fileName, {
+          type: `image/${fileExtension}`,
+        });
         await setImage(convertedFile);
       }
-
 
       // You can replace the following line with your own logic to handle the converted file
     } catch (error) {
@@ -292,38 +280,35 @@ const Profile = () => {
     }
   }
 
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setprogress(true)
+    setprogress(true);
     const formData = new FormData();
-    formData.append('image', image);
-    formData.append('user_id', values.user_id);
+    formData.append("image", image);
+    formData.append("user_id", values.user_id);
 
     fetch(`${BASE_URL}/profile_pic`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
-
-        const profile = data[0].profile_image
-        localStorage.setItem("profile_pic", profile)
-        Navigate('/dash')
+        const profile = data[0].profile_image;
+        localStorage.setItem("profile_pic", profile);
+        Navigate("/dash");
       })
       .catch((error) => {
-        console.error('Error uploading image:', error);
+        console.error("Error uploading image:", error);
       })
       .finally(() => {
-        setprogress(false)
-      })
+        setprogress(false);
+      });
   };
-  
+
   const onhandleSubmit = (e) => {
-    e.preventDefault()
-
-
+    e.preventDefault();
 
     // let errors = { ...error };
     // // Validation logic
@@ -346,12 +331,16 @@ const Profile = () => {
     //   errors.gender = 'Gender is required';
     // }
 
-
     // Set errors
     // setErrors(errors);
 
     // If there are no errors, submit the form
-    if (detail.address && detail.designation && detail.firstname && detail.lastname) {
+    if (
+      detail.address &&
+      detail.designation &&
+      detail.firstname &&
+      detail.lastname
+    ) {
       const user = {
         firstName: detail.firstname,
         lastName: detail.lastname,
@@ -359,24 +348,41 @@ const Profile = () => {
         address: detail.address,
         // birthDate: formatDateToYYYYMMDD(detail.date.$d),
         gender: detail.gender,
-        user_id: localStorage.getItem('user_id'),
+        bio: detail.bio,
+        user_id: localStorage.getItem("user_id"),
       };
 
       axios
         .post(`${BASE_URL}/updateProfile`, user)
+        // .then((res) => {
+        //   console.log(res);
+        //   setOpen(false)
+        // })
         .then((res) => {
           console.log(res);
-          setOpen(false)
+
+          // 🔥 live update profile UI
+          setPro((prev) =>
+            prev.map((item) => ({
+              ...item,
+              firstname: detail.firstname,
+              lastname: detail.lastname,
+              designation: detail.designation,
+              address: detail.address,
+              gender: detail.gender,
+              bio: detail.bio,
+            })),
+          );
+
+          setOpen(false);
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-
-      setCommonerr("All feilds are require")
+      setCommonerr("All feilds are require");
       setTimeout(() => {
-
-        setCommonerr("")
+        setCommonerr("");
       }, 4000);
     }
 
@@ -384,22 +390,22 @@ const Profile = () => {
     setTimeout(() => {
       setErrors({});
     }, 5000);
-  }
-
+  };
 
   const getUSerData = async () => {
+    const user_id = localStorage.getItem("user_id");
 
-    const user_id = localStorage.getItem('user_id')
-
-    const response = await axios.post(`${BASE_URL}/getProfileData`, { user_id })
+    const response = await axios.post(`${BASE_URL}/getProfileData`, {
+      user_id,
+    });
 
     const userData = response.data[0];
-    console.log(userData)
+    console.log(userData);
 
     const birthYear = userData.created_date;
     const birthDate = new Date(birthYear);
 
-    setDetails(prevState => ({
+    setDetails((prevState) => ({
       ...prevState,
       firstname: userData.firstname,
       lastname: userData.lastname,
@@ -407,38 +413,68 @@ const Profile = () => {
       // date:birthDate,
       address: userData.address,
       gender: userData.gender,
-
-    }))
+      bio: userData.bio || "",
+    }));
 
     console.log(response.data[0]);
-  }
+  };
 
   useEffect(() => {
     getUSerData();
-  }, [])
-
+  }, []);
 
   const handleImageLoad = () => {
-    console.log('Image loaded successfully!');
+    console.log("Image loaded successfully!");
     setIsLoading(false);
   };
 
   const handleImageError = () => {
-    console.error('Error loading image.');
+    console.error("Error loading image.");
     setIsLoading(false);
   };
-  
+
+  // const onhandleChange = (e) => {
+  //   setDetails((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
   const onhandleChange = (e) => {
+    const { name, value } = e.target;
+
+    // 🔥 Special handling for bio word limit
+    if (name === "bio") {
+      const words = value.trim().split(/\s+/).filter(Boolean);
+
+      if (words.length > 150) {
+        const trimmed = words.slice(0, 150).join(" ");
+        setDetails((prev) => ({
+          ...prev,
+          bio: trimmed,
+        }));
+        return;
+      }
+    }
+
     setDetails((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
   function formatDateToCustomString(dateString) {
     const date = new Date(dateString);
-    const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZoneName: 'short' };
-    const formattedDate = date.toLocaleString('en-US', options);
+    const options = {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZoneName: "short",
+    };
+    const formattedDate = date.toLocaleString("en-US", options);
     return formattedDate;
   }
 
@@ -448,127 +484,237 @@ const Profile = () => {
   console.log(formattedDate); // Output: "Thu Mar 14 2024 00:00:00 GMT+0530"
 
   return (
-
-    <div className='page-container'>
-      {
-        prodata.map((item, index) => {
-          return (
-            <div className='tab-content' key={index}>
-              <div className='tab-pane active'>
-               
-                <div className='myprofile-holder'>
-                  <div className='myprofile-img'>
-                    <div className='img-frame'>
-                      {/* <div className='profile-pic'>
+    <div className="page-container">
+      {prodata.map((item, index) => {
+        return (
+          <div className="tab-content" key={index}>
+            <div className="tab-pane active">
+              <div className="myprofile-holder">
+                <div className="myprofile-img">
+                  <div className="img-frame">
+                    {/* <div className='profile-pic'>
                         {isLoading && <div style={{position :"absolute", left:"50px"}}>Loading...</div>}
                         {isLoading && <div><img src={loader} alt='' /></div>}
 
                         <img src={values.image !== '' ? values.image : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} a id='output' width='200' alt='profile' onLoad={handleImageLoad} onError={handleImageError} />
                       </div> */}
-                      <div
-                        style={{
-                          width: "103 px",
-                          height: "120px",
-                          borderRadius: "20px", // 🔥 same as your design (not circle)
-                          overflow: "hidden",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          backgroundColor: "#e9ecef",
-                        }}
+                    <div
+                      style={{
+                        width: "103 px",
+                        height: "120px",
+                        borderRadius: "20px", // 🔥 same as your design (not circle)
+                        overflow: "hidden",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#e9ecef",
+                      }}
+                    >
+                      {values.image || item.profile_image ? (
+                        <img
+                          src={
+                            values.image
+                              ? values.image
+                              : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`
+                          }
+                          alt="profile"
+                          width="200"
+                          height="200"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <span
+                          style={{
+                            fontSize: "55px",
+                            fontWeight: "600",
+                            color: "#0d6efd",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {`${item?.firstname?.charAt(0) || ""}${item?.lastname?.charAt(0) || ""}` ||
+                            "U"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {progress ? <LinearProgress sx={{ color: "red" }} /> : null}
+                  <form onSubmit={handleSubmit} method="POST">
+                    <input
+                      id="pro-pic"
+                      type="file"
+                      name="post"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                    {hide ? (
+                      <button
+                        type="submit"
+                        className="btn-upload"
+                        style={{ marginTop: "5px" }}
                       >
-                        {values.image || item.profile_image ? (
-                          <img
-                            src={
-                              values.image
-                                ? values.image
-                                : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`
-                            }
-                            alt="profile"
-                            width="200"
-                            height="200"
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          <span
-                            style={{
-                              fontSize: "55px",
-                              fontWeight: "600",
-                              color: "#0d6efd",
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {`${item?.firstname?.charAt(0) || ""}${item?.lastname?.charAt(0) || ""}` ||
-                              "U"}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {progress ? <LinearProgress sx={{ color: "red" }} /> : null}
-                    <form onSubmit={handleSubmit} method='POST'>
-                      <input id='pro-pic' type='file' name='post' accept='image/*' onChange={handleImageUpload} />
-                      {hide ? <button type='submit' className='btn-upload' style={{ marginTop: '5px' }}>
                         Upload
-                      </button> : null}
-                    </form>
+                      </button>
+                    ) : null}
+                  </form>
+                </div>
+                <div className="myprofile-des" style={{ position: "relative" }}>
+                  <div className="profiledetails">
+                    <h2 id="h1_username">{item.firstname}</h2>
+                    <h4 id="h1_designation">{item.designation}</h4>
+                    <h4 id="h1_designation">{item.address}</h4>
                   </div>
-                  <div className='myprofile-des' style={{ position: 'relative' }}>
-                    <div className='profiledetails'>
-                      <h2 id='h1_username'>{item.firstname}</h2>
-                      <h4 id='h1_designation'>{item.designation}</h4>
-                      <h4 id='h1_designation'>{item.address}</h4>
-                    </div>
-                    <p className='edit-p mt-3 py-1'>Message</p>
-                    <p className='edit'>
-                      {' '}
-                      <i className='ri-edit-fill' onClick={handleClickOpen}></i>
-                    </p>
-                  </div>
+                  <p
+                    className="edit-p mt-3 py-1"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {item.bio ? item.bio : "No bio added"}
+                  </p>
+                  <p className="edit">
+                    {" "}
+                    <i className="ri-edit-fill" onClick={handleClickOpen}></i>
+                  </p>
+                </div>
 
-                  <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-                    <AppBar sx={{ position: 'relative' }} style={{ background: '#E73758' }}>
-                      <Toolbar>
-                        <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-                          <CloseIcon />
-                        </IconButton>
-                        <Typography sx={{ ml: 2, flex: 1 }} variant='h6' component='div'>
-                          Edit Profile
-                        </Typography>
-                        <Button type='submit' autoFocus color='inherit' onClick={onhandleSubmit}>
-                          save
-                        </Button>
-                      </Toolbar>
-                    </AppBar>
-                    <Box component='form' autoComplete='off' style={{ padding: '10px 10px' }}>
-                      <TextField id='standard-basic' fullWidth label='First Name' name="firstname" value={detail.firstname} onChange={onhandleChange} />
-                      {error.firstname && <span className='text-danger'>{error.firstname}</span>}
-                    </Box>
-                    <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
-                      <TextField id='standard-basic' fullWidth label='Last Name' name="lastname" value={detail.lastname} onChange={onhandleChange} />
-                      {error.lastname && <span className='text-danger'>{error.lastname}</span>}
-                    </Box>
-                    <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
-                      <TextField id='standard-basic' fullWidth select defaultValue='Select' name='designation' value={detail.designation} onChange={onhandleChange}>
-                        {Designation.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                      {error.designation && <span className='text-danger'>{error.designation}</span>}
-                    </Box>
-                    <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
-                      <TextField id='standard-basic' fullWidth label='Location' name="address" value={detail.address} onChange={onhandleChange} />
-                      {error.address && <span className='text-danger'>{error.address}</span>}
-                    </Box>
-                    {/* <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
+                <Dialog
+                  fullScreen
+                  open={open}
+                  onClose={handleClose}
+                  TransitionComponent={Transition}
+                >
+                  <AppBar
+                    sx={{ position: "relative" }}
+                    style={{ background: "#E73758" }}
+                  >
+                    <Toolbar>
+                      <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={handleClose}
+                        aria-label="close"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                      <Typography
+                        sx={{ ml: 2, flex: 1 }}
+                        variant="h6"
+                        component="div"
+                      >
+                        Edit Profile
+                      </Typography>
+                      <Button
+                        type="submit"
+                        autoFocus
+                        color="inherit"
+                        onClick={onhandleSubmit}
+                      >
+                        save
+                      </Button>
+                    </Toolbar>
+                  </AppBar>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "10px 10px" }}
+                  >
+                    <TextField
+                      id="standard-basic"
+                      fullWidth
+                      label="First Name"
+                      name="firstname"
+                      value={detail.firstname}
+                      onChange={onhandleChange}
+                    />
+                    {error.firstname && (
+                      <span className="text-danger">{error.firstname}</span>
+                    )}
+                  </Box>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "5px 10px" }}
+                  >
+                    <TextField
+                      id="standard-basic"
+                      fullWidth
+                      label="Last Name"
+                      name="lastname"
+                      value={detail.lastname}
+                      onChange={onhandleChange}
+                    />
+                    {error.lastname && (
+                      <span className="text-danger">{error.lastname}</span>
+                    )}
+                  </Box>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "5px 10px" }}
+                  >
+                    <TextField
+                      id="standard-basic"
+                      fullWidth
+                      select
+                      defaultValue="Select"
+                      name="designation"
+                      value={detail.designation}
+                      onChange={onhandleChange}
+                    >
+                      {Designation.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    {error.designation && (
+                      <span className="text-danger">{error.designation}</span>
+                    )}
+                  </Box>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "5px 10px" }}
+                  >
+                    <TextField
+                      id="standard-basic"
+                      fullWidth
+                      label="Location"
+                      name="address"
+                      value={detail.address}
+                      onChange={onhandleChange}
+                    />
+                    {error.address && (
+                      <span className="text-danger">{error.address}</span>
+                    )}
+                  </Box>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "5px 10px" }}
+                  >
+                    <TextField
+                      fullWidth
+                      multiline
+                      rows={3}
+                      label="Bio"
+                      name="bio"
+                      value={detail.bio}
+                      onChange={onhandleChange}
+                      placeholder="Write something about yourself..."
+                    />
+                  </Box>
+                  {/* <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={['DatePicker', 'DateTimePicker', 'TimePicker', 'DateRangePicker']}></DemoContainer>
                         <DemoItem label='BirthDate'>
@@ -577,37 +723,50 @@ const Profile = () => {
                       </LocalizationProvider>
                       {error.date && <span className='text-danger'>{error.date}</span>}
                     </Box> */}
-                    <Box component='form' autoComplete='off' style={{ padding: '5px 10px' }}>
-                      <FormControl>
-                        <FormLabel id='demo-row-radio-buttons-group-label'>Gender</FormLabel>
-                        <RadioGroup row aria-labelledby='demo-row-radio-buttons-group-label' name='gender' value={detail.gender} onChange={onhandleChange}>
-                          {
-                            gender.map((gender) => {
-                              return (
-                                <FormControlLabel value={gender.value} control={<Radio />} label={gender.label} />
-                              )
-                            })
-                          }
-                        </RadioGroup>
-                      </FormControl>
-                      {error.gender && <span className='text-danger'>{error.gender}</span>}
-                    </Box>
-                    <p className='text-danger text-center'>{commonerr}</p>
-                  </Dialog>
-
-                </div>
+                  <Box
+                    component="form"
+                    autoComplete="off"
+                    style={{ padding: "5px 10px" }}
+                  >
+                    <FormControl>
+                      <FormLabel id="demo-row-radio-buttons-group-label">
+                        Gender
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="gender"
+                        value={detail.gender}
+                        onChange={onhandleChange}
+                      >
+                        {gender.map((gender) => {
+                          return (
+                            <FormControlLabel
+                              value={gender.value}
+                              control={<Radio />}
+                              label={gender.label}
+                            />
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    {error.gender && (
+                      <span className="text-danger">{error.gender}</span>
+                    )}
+                  </Box>
+                  <p className="text-danger text-center">{commonerr}</p>
+                </Dialog>
               </div>
             </div>
-          )
-        })
-      }
+          </div>
+        );
+      })}
 
-
-      <div className='card'>
-        <div className='followstatus row p-2'>
+      <div className="card">
+        <div className="followstatus row p-2">
           {follower?.data?.map((item, index) => {
             return (
-              <div className='text-center col-4' key={index}>
+              <div className="text-center col-4" key={index}>
                 <p>Followers</p>
                 <span>{item.follower}</span>
               </div>
@@ -615,7 +774,7 @@ const Profile = () => {
           })}
           {getfollow?.data?.map((item, index) => {
             return (
-              <div className='text-center col-4' key={index}>
+              <div className="text-center col-4" key={index}>
                 <p>Following</p>
                 <span>{item.following === null ? 0 : item.following}</span>
               </div>
@@ -623,7 +782,7 @@ const Profile = () => {
           })}
           {posts?.data?.map((item, index) => {
             return (
-              <div className='text-center col-4' key={index}>
+              <div className="text-center col-4" key={index}>
                 <p>Posts</p>
                 <span>{item.post === null ? 0 : item.post}</span>
               </div>
