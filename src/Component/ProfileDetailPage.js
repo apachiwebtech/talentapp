@@ -356,15 +356,63 @@ const ProfileDetailPage = () => {
                                         <div className='myprofile-holder'>
                                             <div className='myprofile-img'>
                                                 <div className='img-frame'>
-                                                    <div className='profile-pic'>
+                                                    {/* <div className='profile-pic'>
                                                         <label className='label' htmlFor='file'>
                                                             <span className='cam-icon'></span>
                                                         </label>
-                                                        {isLoading && <div><img src={loader} alt='' /></div>}
                                                         <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
                                                             <img src={item.profile_image === '' ? img : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} width='200' alt='profile' onLoad={handleImageLoad2} />
                                                         </SlideshowLightbox>
-                                                    </div>
+                                                    </div> */}
+                                                    <div className="profile-pic">
+
+                                                        <div
+                                                            style={{
+                                                            width: "103px",
+                                                            height: "120px",
+                                                            borderRadius: "20px",
+                                                            overflow: "hidden",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                            backgroundColor: "#e9ecef",
+                                                            }}
+                                                        >
+                                                            {item?.profile_image ? (
+                                                            <SlideshowLightbox iconColor="#000" backgroundColor="#fff">
+                                                                <img
+                                                                src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+                                                                alt="profile"
+                                                                style={{
+                                                                    width: "100%",
+                                                                    height: "100%",
+                                                                    objectFit: "cover",
+                                                                }}
+                                                                onLoad={handleImageLoad2}
+                                                                onError={(e) => {
+                                                                    e.currentTarget.style.display = "none";
+                                                                    e.currentTarget.parentElement.nextSibling?.classList.remove(
+                                                                    "d-none"
+                                                                    );
+                                                                }}
+                                                                />
+                                                            </SlideshowLightbox>
+                                                            ) : (
+                                                            <span
+                                                                style={{
+                                                                fontSize: "55px",
+                                                                fontWeight: "600",
+                                                                color: "#0d6efd",
+                                                                textTransform: "uppercase",
+                                                                }}
+                                                            >
+                                                                {`${item?.firstname?.charAt(0) || ""}${
+                                                                item?.lastname?.charAt(0) || ""
+                                                                }` || "U"}
+                                                            </span>
+                                                            )}
+                                                        </div>
+                                                        </div>
                                                 </div>
 
                                             </div>
@@ -482,11 +530,55 @@ const ProfileDetailPage = () => {
                         <div className='talent-post ' key={index}>
                             <div className='px-3 py-2 post-head d-flex align-items-center justify-content-between'>
                                 <div className='d-flex align-items-center'>
-                                    <div className='post-img'>
+                                    {/* <div className='post-img'>
                                         <SlideshowLightbox iconColor="#000" backgroundColor='#fff'>
                                             <img src={item.profile_image === '' ? img : 'https://thetalentclub.co.in/upload/profile/' + item.profile_image} alt='' />
                                         </SlideshowLightbox>
-                                    </div>
+                                    </div> */}
+                                    <div className="post-img" style={{ width: 50, height: 50 }}>
+  {item?.profile_image?.trim() ? (
+    <SlideshowLightbox iconColor="#000" backgroundColor="#fff">
+      <img
+        src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
+        alt="profile"
+        width="50"
+        height="50"
+        className="rounded-circle"
+        style={{ objectFit: "cover" }}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.style.display = "none";
+
+          // show initials
+          const fallback =
+            e.target.parentElement.nextElementSibling;
+          if (fallback) fallback.style.display = "flex";
+        }}
+      />
+    </SlideshowLightbox>
+  ) : null}
+
+  {/* ✅ INITIALS — OUTSIDE LIGHTBOX */}
+  <div
+    style={{
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      background: "#0d6efd",
+      color: "#fff",
+      display: item?.profile_image?.trim() ? "none" : "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: 600,
+      fontSize: "16px",
+      textTransform: "uppercase",
+    }}
+  >
+    {(item?.firstname?.charAt(0) || "") +
+      (item?.lastname?.charAt(0) || "") || "U"}
+  </div>
+</div>
+                                    
 
                                     <h4 className='person-name px-2'>
                                         {item.firstname} {item.lastname}

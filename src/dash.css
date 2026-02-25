@@ -1,0 +1,25 @@
+html {
+  scroll-behavior: smooth;
+}
+
+.pull-indicator {
+  position: fixed;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+  transform: translateY(-100%);
+  z-index: 1000;
+}
+
+.pull-indicator.visible {
+  transform: translateY(0);
+}

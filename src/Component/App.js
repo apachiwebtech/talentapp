@@ -266,7 +266,7 @@ const lockToPortrait = async () => {
 };
 
 function MobApp() {
-const [loader , setLoader] = useState(true)
+  const [loader, setLoader] = useState(true)
 
   const navigate = useNavigate();
 
@@ -300,9 +300,9 @@ const [loader , setLoader] = useState(true)
 
 
     });
-    
-   
-  
+
+
+
 
 
   }, [navigate]);
@@ -327,14 +327,17 @@ const [loader , setLoader] = useState(true)
   }
 
 
+
   return (
 
 
     <>
-    {loader && <Loader/>}
-      {window.location.pathname === '/dash' ? <Header /> : window.location.pathname !== '/' && <Header2 />}
-      <Outlet />
-      {window.location.pathname !== '/' && window.location.pathname !== '/reg' && window.location.pathname !== '/postlistingpage' && <Footer />}
+      {loader && <Loader />}
+
+        {window.location.pathname === '/dash' ? <Header /> : window.location.pathname !== '/' && <Header2 />}
+        <Outlet />
+        {window.location.pathname !== '/' && window.location.pathname !== '/reg' && window.location.pathname !== '/postlistingpage' && <Footer />}
+
     </>
   );
 }
