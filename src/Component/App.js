@@ -48,6 +48,8 @@ import Terms from './Terms';
 // import PostlistingPage from './PostlistingPage';
 // import { ScreenOrientation, OrientationType } from '@capawesome/capacitor-screen-orientation';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import Events from './Events';
+import EventDetail from './EventDetail';
 const Dash = lazy(() => import('./Dash'));
 const MyClub = lazy(() => import('./MyClub'));
 const GroupPost = lazy(() => import('./GroupPost'));
@@ -141,6 +143,22 @@ const Routing = createBrowserRouter([
         element: (
           <Suspense fallback={<Loader />}>
             <Mypost />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/events',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Events />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/event/:id',
+        element: (
+          <Suspense fallback={<Loader />}>
+            <EventDetail />
           </Suspense>
         ),
       },

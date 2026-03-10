@@ -72,6 +72,11 @@ const Header = () => {
             </Link>
           </li>
           <li onClick={() => setClick(!click)}>
+            <Link to='/events'>
+              <i className='ri-contacts-book-line'></i> Events
+            </Link>
+          </li>
+          <li onClick={() => setClick(!click)}>
             <Link to='/sharecard'>
               <i className='ri-contacts-book-line'></i> Talent Share Card
             </Link>

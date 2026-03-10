@@ -5,7 +5,13 @@ const Header2 = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const getPageName = () => {
-    switch (location.pathname) {
+    const path = location.pathname;
+
+  if (path.startsWith('/event/')) {
+    return 'Event details';
+  }
+  
+    switch (path) {
       case '/offer':
         return 'Offer';
       case '/createpost':
@@ -34,6 +40,8 @@ const Header2 = () => {
         return 'Sharecard'                  
       case '/policy' :
         return 'Policy'                  
+      case '/events' :
+        return 'My Events'                                   
       case '/terms' :
         return 'Terms & Conditions'                  
       default:
