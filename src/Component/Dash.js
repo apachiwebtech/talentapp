@@ -42,7 +42,7 @@ const currentPostId = useSelector((state) => state.Count.postId);
   const [loading, setLoading] = useState({});
   const [proloading, setProLoading] = useState(true);
   const [post, setgetpost] = useState([]);
-  const [getaddvertsiment, setgetaddvertsiment] = useState([]);
+const [advertisement, setAdvertisement] = useState(null);
   const [followinfo, setFollowdata] = useState([]);
   const [likedata, setlikedata] = useState([]);
   const [comlike, setcomlike] = useState([]);
@@ -144,6 +144,22 @@ const currentPostId = useSelector((state) => state.Count.postId);
   // const dispatch = useDispatch();
   // const count = useSelector((state) => state.Count.count);
   // const currentPostId = useSelector((state) => state.Count.postId);
+const deletePost = async (post_id) => {
+  const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+  if (!confirmDelete) return;
+
+  try {
+    await axios.post(`${BASE_URL}/delete_post`, {
+      post_id: post_id,
+      user_id: localStorage.getItem("user_id"),
+    });
+
+    // remove post from UI
+    setgetpost((prev) => prev.filter((p) => p.post_id !== post_id));
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const profile_img = localStorage.getItem("profile_pic");
 
@@ -163,8 +179,11 @@ const currentPostId = useSelector((state) => state.Count.postId);
 
         setLastid(res.data.lastPostId);
         setgetpost((prevData) => [...prevData, ...res.data.result]);
-        setgetaddvertsiment(() => [...res.data.advertisements]);
-        setadvertisement_pages(res.data.advertisement_pages + 1);
+if (res.data.advertisements && res.data.advertisements.length > 0) {
+  setAdvertisement(res.data.advertisements[0]); // only one ad
+}
+
+setadvertisement_pages(res.data.advertisement_pages);
 
         setShow(true);
         // if (addcount % 2 == 0) {
@@ -362,34 +381,23 @@ const currentPostId = useSelector((state) => state.Count.postId);
   };
 
   const gotoweb = async () => {
-    const advertisementId =
-      getaddvertsiment.length > 0 ? getaddvertsiment[0].id : null; // Get the ID of the first advertisement
+  if (!advertisement) return;
 
-    if (advertisementId) {
-      try {
-        // Send the post_id and advertisement_id to the API to update the click count
-        const res = await axios.post(`${BASE_URL}/updateAdClickCount`, {
-          advertisement_id: advertisementId,
-        });
-        console.log(res.data); // Handle the response if needed (e.g., store data in state)
+  try {
+    await axios.post(`${BASE_URL}/updateAdClickCount`, {
+      advertisement_id: advertisement.id,
+    });
 
-        // If the API call is successful, open the URL of the advertisement
-        await Browser.open({
-          url: getaddvertsiment.map((item) =>
-            item.link.startsWith("http://") || item.link.startsWith("https://")
-              ? item.link
-              : `http://${item.link}`,
-          )[0], // Ensure you're opening a single link
-        });
-      } catch (err) {
-        console.log("Error during API request or opening browser:", err);
-        // Handle the error (e.g., show a notification to the user)
-      }
-    } else {
-      console.log("No advertisement found.");
-      // Handle the case where there are no advertisements (optional)
+    let url = advertisement.link;
+    if (!url.startsWith("http")) {
+      url = "https://" + url;
     }
-  };
+
+    await Browser.open({ url });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   const PullToRefresh = ({ onRefresh, children }) => {
     const [startY, setStartY] = useState(0);
@@ -650,6 +658,7 @@ const currentPostId = useSelector((state) => state.Count.postId);
           );
         })}
 
+
         {post?.map((item, index) => {
           const timestampStr = item.createdDate; // Assuming item.createdDate is the timestamp string
           const timestamp = new Date(timestampStr);
@@ -773,7 +782,7 @@ const currentPostId = useSelector((state) => state.Count.postId);
                       </h4>
                     </Link>
                   </div>
-                  <div onClick={() => onhandleClick(item.user_id)}>
+                  {/* <div onClick={() => onhandleClick(item.user_id)}>
                     <p className="follow">
                       {followdata.some(
                         (ele) => ele.follow_user_id === item.user_id,
@@ -781,7 +790,34 @@ const currentPostId = useSelector((state) => state.Count.postId);
                         ? "Following"
                         : "Follow"}
                     </p>
-                  </div>
+                  </div> */}
+
+                  <div>
+                
+                  {item.user_id == localStorage.getItem("user_id") ? (
+                    <p
+                      className="follow text-danger"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => deletePost(item.post_id)}
+                    >
+                      Delete
+                    </p>
+                  ) : (
+                  
+                    <p
+                      className="follow"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => onhandleClick(item.user_id)}
+                    >
+                      {followdata.some(
+                        (ele) => ele.follow_user_id === item.user_id
+                      )
+                        ? "Following"
+                        : "Follow"}
+                    </p>
+                  )}
+                </div>
+                
                 </div>
 
                 <Slider {...settings}>
@@ -980,38 +1016,39 @@ const currentPostId = useSelector((state) => state.Count.postId);
                 </div>
               </div>
               
-              {index % 5 == 0 ? (
-                  <div className="talent-post">
-                    {/* <SlideshowLightbox iconColor="#000" backgroundColor='#fff'> */}
-                    <Link to={`${getaddvertsiment.map((item) => item.link)}`}>
-                    <img
-                      src={`${IMG_ADVERTSIMENT_URL}${getaddvertsiment.map((item) => item.image_path)}`}
-                      alt=""
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                      onLoad={() => handleImageLoad(index)}
-                    />
-                    <div className="d-flex justify-content-between border-2 align-items-center p-2 bg-light border-top">
-                      <span className="text-dark  ">
-                        <b>{getaddvertsiment.map((item) => item.vtitle)}</b>
-                      </span>
-                      <button
-                        onClick={gotoweb}
-                        className="btn btn-sm btn-primary rounded-2"
-                      >
-                        {getaddvertsiment.map((item) => item.vbtitle)}
-                      </button>
-                    </div>
+              {index % 5 === 0 && advertisement && (
+  <div className="talent-post">
+    <a
+      href={advertisement.link}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src={`${IMG_ADVERTSIMENT_URL}${advertisement.image_path}`}
+        alt=""
+        style={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
 
-                    </Link>
-                    {/* </SlideshowLightbox> */}
-                  </div>
-                ) : null
-              }
+      <div className="d-flex justify-content-between border-2 align-items-center p-2 bg-light border-top">
+        <span className="text-dark">
+          <b>{advertisement.vtitle}</b>
+        </span>
+
+        <button
+          onClick={gotoweb}
+          className="btn btn-sm btn-primary rounded-2"
+        >
+          {advertisement.vbtitle}
+        </button>
+      </div>
+    </a>
+  </div>
+)}
             </>
           );
         })}

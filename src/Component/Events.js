@@ -46,7 +46,7 @@ const Events = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="container-fluid mt-3 pb-5">
+    <div className="container-fluid mt-3" style={{paddingBottom:"6rem"}}>
       {/* PAGE TITLE */}
       <div className="d-flex align-items-center mb-3">
         <i className="bi bi-calendar-event fs-3 text-primary me-2"></i>

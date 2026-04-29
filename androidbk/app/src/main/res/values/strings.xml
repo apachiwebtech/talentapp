@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">theTalentClub</string>
+    <string name="title_activity_main">theTalentClub</string>
+    <string name="package_name">com.tclub.app</string>
+    <string name="custom_url_scheme">com.tclub.app</string>
+</resources>
