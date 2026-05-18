@@ -33,16 +33,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const Dash = () => {
   const loggeduser = localStorage.getItem("userName");
- const navigate = useNavigate();
-const dispatch = useDispatch();
-const count = useSelector((state) => state.Count.count);
-const currentPostId = useSelector((state) => state.Count.postId);
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const count = useSelector((state) => state.Count.count);
+  const currentPostId = useSelector((state) => state.Count.postId);
+  const [expandedTitle, setExpandedTitle] = useState({});
   const Lastname = localStorage.getItem("Lastname");
   const [loading, setLoading] = useState({});
   const [proloading, setProLoading] = useState(true);
   const [post, setgetpost] = useState([]);
-const [advertisement, setAdvertisement] = useState(null);
+  const [advertisement, setAdvertisement] = useState(null);
   const [followinfo, setFollowdata] = useState([]);
   const [likedata, setlikedata] = useState([]);
   const [comlike, setcomlike] = useState([]);
@@ -144,22 +144,24 @@ const [advertisement, setAdvertisement] = useState(null);
   // const dispatch = useDispatch();
   // const count = useSelector((state) => state.Count.count);
   // const currentPostId = useSelector((state) => state.Count.postId);
-const deletePost = async (post_id) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-  if (!confirmDelete) return;
+  const deletePost = async (post_id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
+    if (!confirmDelete) return;
 
-  try {
-    await axios.post(`${BASE_URL}/delete_post`, {
-      post_id: post_id,
-      user_id: localStorage.getItem("user_id"),
-    });
+    try {
+      await axios.post(`${BASE_URL}/delete_post`, {
+        post_id: post_id,
+        user_id: localStorage.getItem("user_id"),
+      });
 
-    // remove post from UI
-    setgetpost((prev) => prev.filter((p) => p.post_id !== post_id));
-  } catch (error) {
-    console.log(error);
-  }
-};
+      // remove post from UI
+      setgetpost((prev) => prev.filter((p) => p.post_id !== post_id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const profile_img = localStorage.getItem("profile_pic");
 
@@ -175,15 +177,15 @@ const deletePost = async (post_id) => {
       .then((res) => {
         // console.log('API call succeeded');
         setCount(addcount + 1);
-        console.log('Post count:', res.data.advertisements);
+        // console.log("Post count:", res.data.advertisements);
 
         setLastid(res.data.lastPostId);
         setgetpost((prevData) => [...prevData, ...res.data.result]);
-if (res.data.advertisements && res.data.advertisements.length > 0) {
-  setAdvertisement(res.data.advertisements[0]); // only one ad
-}
+        if (res.data.advertisements && res.data.advertisements.length > 0) {
+          setAdvertisement(res.data.advertisements[0]); // only one ad
+        }
 
-setadvertisement_pages(res.data.advertisement_pages);
+        setadvertisement_pages(res.data.advertisement_pages);
 
         setShow(true);
         // if (addcount % 2 == 0) {
@@ -286,40 +288,40 @@ setadvertisement_pages(res.data.advertisement_pages);
 
   // };
 
- const handleLike = useRef(
-  _debounce((id) => {
+  const handleLike = useRef(
+    _debounce((id) => {
+      const data = {
+        post_id: id,
+        user_id: localStorage.getItem("user_id"),
+      };
+      axios.post(`${BASE_URL}/dash_post_like`, data).then(() => {
+        getLikedata();
+        getlikeCount();
+      });
+    }, 200),
+  ).current;
+
+  const tapHandler = async (id) => {
+    if (!tapedTwice.current) {
+      tapedTwice.current = true;
+
+      setTimeout(() => {
+        tapedTwice.current = false;
+      }, 300);
+
+      return;
+    }
+
     const data = {
       post_id: id,
       user_id: localStorage.getItem("user_id"),
     };
+
     axios.post(`${BASE_URL}/dash_post_like`, data).then(() => {
       getLikedata();
       getlikeCount();
     });
-  }, 200)
-).current;
-
-  const tapHandler = async (id) => {
-  if (!tapedTwice.current) {
-    tapedTwice.current = true;
-
-    setTimeout(() => {
-      tapedTwice.current = false;
-    }, 300);
-
-    return;
-  }
-
-  const data = {
-    post_id: id,
-    user_id: localStorage.getItem("user_id"),
   };
-
-  axios.post(`${BASE_URL}/dash_post_like`, data).then(() => {
-    getLikedata();
-    getlikeCount();
-  });
-};
 
   const fetchData = async () => {
     try {
@@ -381,23 +383,23 @@ setadvertisement_pages(res.data.advertisement_pages);
   };
 
   const gotoweb = async () => {
-  if (!advertisement) return;
+    if (!advertisement) return;
 
-  try {
-    await axios.post(`${BASE_URL}/updateAdClickCount`, {
-      advertisement_id: advertisement.id,
-    });
+    try {
+      await axios.post(`${BASE_URL}/updateAdClickCount`, {
+        advertisement_id: advertisement.id,
+      });
 
-    let url = advertisement.link;
-    if (!url.startsWith("http")) {
-      url = "https://" + url;
+      let url = advertisement.link;
+      if (!url.startsWith("http")) {
+        url = "https://" + url;
+      }
+
+      await Browser.open({ url });
+    } catch (err) {
+      console.log(err);
     }
-
-    await Browser.open({ url });
-  } catch (err) {
-    console.log(err);
-  }
-};
+  };
 
   const PullToRefresh = ({ onRefresh, children }) => {
     const [startY, setStartY] = useState(0);
@@ -492,7 +494,7 @@ setadvertisement_pages(res.data.advertisement_pages);
                       src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
                       alt="profile"
                       // onClick={togglePopup}
-                      onClick={() => navigate("/profile")}
+                      onClick={() => navigate(`/profiledetailpage/${item.id}`)}
                       // onLoad={() => setProLoading(false)}
                       onError={(e) => {
                         setProLoading(false);
@@ -511,7 +513,7 @@ setadvertisement_pages(res.data.advertisement_pages);
                   {!item?.profile_image?.trim() && (
                     <div
                       // onClick={togglePopup}
-                      onClick={() => navigate("/profile")}
+                      onClick={() => navigate(`/profiledetailpage/${item.id}`)}
                       style={{
                         width: "40px",
                         height: "40px",
@@ -533,34 +535,9 @@ setadvertisement_pages(res.data.advertisement_pages);
                   )}
                 </div>
 
-                {/* {showPopup && (
-                    <div className="popup34">
-                      <span className="close" onClick={togglePopup}>
-                        &times;
-                      </span>
-                       <img src={profile_img === '' ? img : `https://thetalentclub.co.in/upload/profile/${item.profile_image}`} alt='profile' /> 
-                      {item?.profile_image?.trim() ? (
-                        <img
-                          src={`https://thetalentclub.co.in/upload/profile/${item.profile_image}`}
-                          alt="profile"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                            e.target.nextSibling.style.display = "flex";
-                          }}
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "50%",
-                            objectFit: "cover"
-                          }}
-                        />
-                      ) : null}
-                    </div>
-                  )} */}
-
                 <div className="user_nameHolder d-flex justify-content-between">
                   <div className="">
-                    <Link to="/profile">
+                    <Link to={`/profiledetailpage/${item.id}`}>
                       <h2
                         id="loggedin_name"
                         className="animate__animated animate__bounce"
@@ -658,7 +635,6 @@ setadvertisement_pages(res.data.advertisement_pages);
           );
         })}
 
-
         {post?.map((item, index) => {
           const timestampStr = item.createdDate; // Assuming item.createdDate is the timestamp string
           const timestamp = new Date(timestampStr);
@@ -753,13 +729,12 @@ setadvertisement_pages(res.data.advertisement_pages);
                         </SlideshowLightbox>
                       ) : null}
 
-                      {/* ✅ INITIALS — OUTSIDE LIGHTBOX */}
                       <div
                         style={{
                           width: "50px",
                           height: "50px",
                           borderRadius: "50%",
-                          background: "#0d6efd",
+                          background: "#E73758",
                           color: "#fff",
                           display: item?.profile_image?.trim()
                             ? "none"
@@ -771,13 +746,15 @@ setadvertisement_pages(res.data.advertisement_pages);
                           textTransform: "uppercase",
                         }}
                       >
-                        {(item?.firstname?.charAt(0) || "") +
-                          (item?.lastname?.charAt(0) || "") || "U"}
+                        <Link to={`/profiledetailpage/${item.user_id}`}>
+                          {(item?.firstname?.charAt(0) || "") +
+                            (item?.lastname?.charAt(0) || "") || "U"}
+                        </Link>
                       </div>
                     </div>
                     <Link to={`/profiledetailpage/${item.user_id}`}>
                       <h4 className="person-name px-2">
-                        {item.firstname} {item.lastname} 
+                        {item.firstname} {item.lastname}
                         {/* {index} {index % 5} */}
                       </h4>
                     </Link>
@@ -793,33 +770,58 @@ setadvertisement_pages(res.data.advertisement_pages);
                   </div> */}
 
                   <div>
-                
-                  {item.user_id == localStorage.getItem("user_id") ? (
-                    <p
-                      className="follow text-danger"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => deletePost(item.post_id)}
-                    >
-                      Delete
-                    </p>
-                  ) : (
-                  
-                    <p
-                      className="follow"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => onhandleClick(item.user_id)}
-                    >
-                      {followdata.some(
-                        (ele) => ele.follow_user_id === item.user_id
-                      )
-                        ? "Following"
-                        : "Follow"}
-                    </p>
-                  )}
+                    {item.user_id ==
+                    localStorage.getItem(
+                      "user_id",
+                    ) ? //   className="follow text-danger" // <p
+                    //   style={{ cursor: "pointer" }}
+                    //   onClick={() => deletePost(item.post_id)}
+                    // >
+                    //   Remove
+                    // </p>
+                    null : (
+                      <p
+                        className="follow"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => onhandleClick(item.user_id)}
+                      >
+                        {followdata.some(
+                          (ele) => ele.follow_user_id === item.user_id,
+                        )
+                          ? "Following"
+                          : "Follow"}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                
-                </div>
+                <p className="post-title m-0 py-1 m-1">
+                  <b>
+                    {item.title.length > 40
+                      ? expandedTitle[item.post_id]
+                        ? item.title
+                        : item.title.slice(0, 100) + "..."
+                      : item.title}
+                  </b>
 
+                  {item.title.length > 40 && (
+                    <span
+                      onClick={() =>
+                        setExpandedTitle((prev) => ({
+                          ...prev,
+                          [item.post_id]: !prev[item.post_id],
+                        }))
+                      }
+                      style={{
+                        color: "#0d6efd",
+                        cursor: "pointer",
+                        marginLeft: "5px",
+                        fontSize: "13px",
+                      }}
+                    >
+                      {expandedTitle[item.post_id] ? "Show Less" : "Show More"}
+                    </span>
+                  )}
+                </p>
                 <Slider {...settings}>
                   <div
                     className="post-main-img"
@@ -923,55 +925,165 @@ setadvertisement_pages(res.data.advertisement_pages);
                   <i className="ri-trophy-line mx-2 text-danger"></i>
                 </div>
 
-                <div className=" ">
-                  {likecount
+                <div className="">
+                
+
+                  <div
+                    className="px-2 py-2"
+                    style={{
+                      width: "350px",
+                      overflowY: "auto",
+                      overflowX: "hidden",
+                    }}
+                  >
+                    {/* <p className="post-title m-0 py-1">
+                      <b>
+                        {item.title.length > 40
+                          ? expandedTitle[item.post_id]
+                            ? item.title
+                            : item.title.slice(0, 100) + "..."
+                          : item.title}
+                      </b>
+
+                      {item.title.length > 40 && (
+                        <span
+                          onClick={() =>
+                            setExpandedTitle((prev) => ({
+                              ...prev,
+                              [item.post_id]: !prev[item.post_id],
+                            }))
+                          }
+                          style={{
+                            color: "#0d6efd",
+                            cursor: "pointer",
+                            marginLeft: "5px",
+                            fontSize: "13px",
+                          }}
+                        >
+                          {expandedTitle[item.post_id]
+                            ? "Show Less"
+                            : "Show More"}
+                        </span>
+                      )}
+                    </p> */}
+
+                    {item.description.includes("#") ? (
+                      renderClickableText(item.description)
+                    ) : (
+                      <p className="item-desc mb-1">{item.description}</p>
+                    )}
+
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        marginBottom: "0px",
+                        color: "#777",
+                      }}
+                    >
+                      {item.createdDate == null ? "--" : formattedDate}
+                    </p>
+                  </div>
+
+                  <div className="post-activity py-1 d-flex justify-content-between align-items-center">
+                     {likecount
                     ?.filter((ele) => ele.post_id === item.post_id)
                     .map((filteredLike) => {
                       return (
                         <div key={filteredLike.post_id}>
                           {filteredLike.like_count !== null ? (
                             <p
-                              className="like-count"
+                              className="like-count mb-1"
                               onClick={() => onhandlelikeuser(item.post_id)}
                               type="button"
                               data-bs-toggle="modal"
                               data-bs-target="#exampleModal2"
+                              style={{
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                              }}
                             >
-                              {filteredLike.like_count}{" "}
+                              {filteredLike.like_count}
                               <i className="ri-trophy-fill"></i>
                             </p>
                           ) : (
-                            <p className="like-count">
+                            <p
+                              className="like-count mb-1"
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "5px",
+                              }}
+                            >
                               0 <i className="ri-trophy-line"></i>
                             </p>
                           )}
                         </div>
                       );
                     })}
-
-                  <div className="post-activity py-1 d-flex justify-content-between align-items-center">
-                    <div>
-                      <i
-                        className={
-                          likedata.some((ele) => ele.post_id === item.post_id)
-                            ? "ri-trophy-fill mx-2"
-                            : "ri-trophy-line mx-2"
-                        }
-                        id="like1"
-                        onClick={() => handleLike(item.post_id)}
-                      ></i>
-
-                      <i
-                        className="ri-chat-1-line mx-2"
-                        onClick={() => dispatch(getCount(item.post_id))}
-                        type="button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleModal"
+                    <div className="d-flex align-items-center">
+                      {/* Like Icon */}
+                      <div
+                        className="d-flex align-items-center mx-2"
+                        style={{ cursor: "pointer" }}
                       >
-                        {" "}
-                      </i>
+                        <i
+                          className={
+                            likedata.some((ele) => ele.post_id === item.post_id)
+                              ? "ri-trophy-fill"
+                              : "ri-trophy-line"
+                          }
+                          id="like1"
+                          onClick={() => handleLike(item.post_id)}
+                          style={{ fontSize: "20px" }}
+                        ></i>
+                      </div>
+
+                      {/* Comment Icon */}
+                      <div
+                        className="d-flex align-items-center mx-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <i
+                          className="ri-chat-1-line"
+                          onClick={() => dispatch(getCount(item.post_id))}
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModal"
+                          style={{ fontSize: "20px" }}
+                        ></i>
+                        {likecount
+                          ?.filter((ele) => ele.post_id === item.post_id)
+                          .map((filteredLike) => {
+                            return (
+                              <span
+                                key={filteredLike.post_id}
+                                className="px-1 d-flex align-items-center"
+                              >
+                                {filteredLike.comment_count !== null ? (
+                                  <span
+                                    className="like-count"
+                                    style={{
+                                      fontSize: "15px",
+                                      cursor: "pointer",
+                                    }}
+                                    type="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal2"
+                                  >
+                                    {filteredLike.comment_count}
+                                  </span>
+                                ) : null}
+                              </span>
+                            );
+                          })}
+                      </div>
                     </div>
-                    <div>
+                  </div>
+                </div>
+
+                {/* <div>
                       {likecount
                         ?.filter((ele) => ele.post_id === item.post_id)
                         .map((filteredLike) => {
@@ -993,62 +1105,42 @@ setadvertisement_pages(res.data.advertisement_pages);
                             </span>
                           );
                         })}
-                    </div>
-                  </div>
-
-                  <div
-                    className="px-2 py-2"
-                    style={{ width: "350px", overflow: "scroll" }}
-                  >
-                    <p className="post-title m-0 py-1">
-                      <b>{item.title}</b>
-                    </p>
-                    {item.description.includes("#") ? (
-                      renderClickableText(item.description)
-                    ) : (
-                      <p className="item-desc">{item.description}</p>
-                    )}
-
-                    <p style={{ fontSize: "12px" }}>
-                      {item.createdDate == null ? "--" : formattedDate}
-                    </p>
-                  </div>
-                </div>
+                    </div> */}
               </div>
-              
+
               {index % 5 === 0 && advertisement && (
-  <div className="talent-post">
-    <a
-      href={advertisement.link}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <img
-        src={`${IMG_ADVERTSIMENT_URL}${advertisement.image_path}`}
-        alt=""
-        style={{
-          display: "block",
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
+                <div className="talent-post">
+                  <a
+                    href={advertisement.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={`${IMG_ADVERTSIMENT_URL}${advertisement.image_path}`}
+                      alt=""
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
 
-      <div className="d-flex justify-content-between border-2 align-items-center p-2 bg-light border-top">
-        <span className="text-dark">
-          <b>{advertisement.vtitle}</b>
-        </span>
+                    <div className="d-flex justify-content-between border-2 align-items-center p-2 bg-light border-top">
+                      <span className="text-dark">
+                        <b>{advertisement.vtitle}</b>
+                      </span>
 
-        <button
-          onClick={gotoweb}
-          className="btn btn-sm btn-primary rounded-2"
-        >
-          {advertisement.vbtitle}
-        </button>
-      </div>
-    </a>
-  </div>
-)}
+                      <button
+                        onClick={gotoweb}
+                        className="btn btn-sm btn-primary rounded-2"
+                      >
+                        {advertisement.vbtitle}
+                      </button>
+                    </div>
+                  </a>
+                </div>
+              )}
             </>
           );
         })}
@@ -1131,26 +1223,61 @@ setadvertisement_pages(res.data.advertisement_pages);
                       className={`comment-box d-flex align-items-center justify-content-between my-2 ${animate === item.id ? "animate__animated animate__fadeOutRight" : ""} ${clickedItemId === item.id ? "bg-lightblue" : ""}`}
                       key={index}
                     >
-                      <button
-                        className="delete-ovr"
-                        onTouchEnd={handleTouchEnd}
-                        onTouchStart={() =>
-                          handleTouchStart(item.id, item.user_id)
-                        }
-                      >
-                        Touch
-                      </button>
-                      <div>
-                        <p className="name-text">
-                          {" "}
-                          {item.firstname} {item.lastname}
-                        </p>
-                        <p className="comment">{item.comment}</p>
-                      </div>
+                      <Link to={`/profiledetailpage/${item.user_id}`}>
+                        <button
+                          className="delete-ovr"
+                          onTouchEnd={handleTouchEnd}
+                          onTouchStart={() =>
+                            handleTouchStart(item.id, item.user_id)
+                          }
+                        >
+                          Touch
+                        </button>
+                        <div>
+                          <p className="name-text">
+                            {" "}
+                            {item.firstname} {item.lastname}
+                          </p>
 
+                          <p className="comment">{item.comment}</p>
+                        </div>
+                      </Link>
                       <div className="d-flex">
                         <div>
+                          <span
+                            className="fw-small"
+                            onClick={() => {
+                              const selectComment_id = item.id;
+
+                              const data = {
+                                comment_id: selectComment_id,
+                                user_id: localStorage.getItem("user_id"),
+                              };
+                              if (
+                                comlike.some(
+                                  (ele) => ele.comment_id === selectComment_id,
+                                )
+                              ) {
+                                axios
+                                  .post(`${BASE_URL}/comment_like_delete`, data)
+                                  .then((res) => {
+                                    dispatch(getCount(item.post_id));
+                                    getcommentlikeData();
+                                  });
+                              } else {
+                                axios
+                                  .post(`${BASE_URL}/comment_like`, data)
+                                  .then((res) => {
+                                    dispatch(getCount(item.post_id));
+                                    getcommentlikeData();
+                                  });
+                              }
+                            }}
+                          >
+                            <span>{item.like_count} </span>
+                          </span>
                           <i
+                            style={{ marginRight: "8px" }}
                             className={
                               comlike.some((ele) => ele.comment_id === item.id)
                                 ? "ri-thumb-up-fill"
@@ -1184,14 +1311,11 @@ setadvertisement_pages(res.data.advertisement_pages);
                               }
                             }}
                           ></i>
-                          <span className="fw-bold">
-                            <span>{item.like_count} </span>Like
-                          </span>
                         </div>
-                        <div className="mx-2">
+                        {/* <div className="mx-2">
                           <i className="ri-reply-line"></i>
                           <span className="fw-bold">Reply</span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div
@@ -1330,4 +1454,3 @@ setadvertisement_pages(res.data.advertisement_pages);
 };
 
 export default Dash;
-

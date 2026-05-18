@@ -667,6 +667,7 @@ const Profile = () => {
                       fullWidth
                       select
                       defaultValue="Select"
+                       label="Designation"
                       name="designation"
                       value={detail.designation}
                       onChange={onhandleChange}

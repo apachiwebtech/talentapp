@@ -5,6 +5,12 @@
 
  @import url('https://fonts.googleapis.com/css2?family=Salsa&display=swap');
 
+ *{
+  text-decoration: none;
+ }
+ * .post-hash{
+  text-decoration: none;
+ }
 
 .loader {
   border: 8px solid #f3f3f3;
@@ -4409,7 +4415,7 @@ div#editprofile {
 }
 .post-hash {
   font-size: 12px;
-  color: #ff6d80;
+text-decoration: none !important;
 }
 .follow {
   font-size: 13px;

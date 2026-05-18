@@ -2,11 +2,16 @@ import React, { useEffect } from 'react';
 import hedermenu from '../images/header-menw.png';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { BASE_URL, version} from './BaseUrl';
+import axios from 'axios';
 
 const Header = () => {
   const navigate = useNavigate();
   const [click, setClick] = useState(true);
-
+  const [versionMessage, setVersionMessage] = useState("");
+   const [appVersion, setAppVersion] = useState("");
+   const [isLatest, setIsLatest] = useState(true);
+    const [downloadLink, setDownloadLink] = useState("");
   const onHandlelogout = () => {
     localStorage.removeItem('user_id');
     localStorage.removeItem('post_id');
@@ -18,7 +23,45 @@ const Header = () => {
     
     navigate('/');
   };
+const userId = localStorage.getItem("user_id");
 
+   useEffect(() => {
+    checkVersion();
+  }, []);
+
+  const checkVersion = async () => {
+    try {
+      const res = await axios.post(`${BASE_URL}/get_version`, {
+        currentversion: version,
+      });
+
+      const data = res.data;
+
+      if (data.status) {
+        setIsLatest(data.same);
+        setDownloadLink(data.download_link);
+
+        if (data.same) {
+          setVersionMessage(
+            `You are using latest version (${data.latest_version})`
+          );
+        } else {
+          setVersionMessage(
+            `New version ${data.latest_version} available`
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setVersionMessage("Unable to check app version");
+    }
+  };
+
+  const handleUpdate = () => {
+    if (downloadLink) {
+      window.open(downloadLink, "_blank");
+    }
+  };
 
   return (
     <div style={{ zIndex: "1" }}>
@@ -62,7 +105,8 @@ const Header = () => {
             </Link>
           </li>
           <li onClick={() => setClick(!click)}>
-            <Link to='/profile'>
+           <Link to={`/profiledetailpage/${userId}`}>
+            {/* <Link to='/profile'> */}
               <i className='ri-contacts-book-line'></i> My Profile
             </Link>
           </li>
@@ -108,6 +152,39 @@ const Header = () => {
               <i className='ri-logout-box-r-line'></i> Logout
             </li>
           </ul>
+           {versionMessage && (
+            <div
+              style={{
+                marginTop: "10px",
+                padding: "10px",
+                borderRadius: "8px",
+                background: isLatest ? "#e8f5e9" : "#ffebee",
+                color: isLatest ? "#2e7d32" : "#d32f2f",
+                fontSize: "13px",
+                fontWeight: "600",
+                textAlign: "center",
+              }}
+            >
+              {versionMessage}
+
+              {!isLatest && downloadLink && (
+                <div style={{ marginTop: "8px" }}>
+                  <a
+                    href={downloadLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#0d6efd",
+                      textDecoration: "none",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Update Now
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
           <div className='static-content'>
             <Link to='/policy'>Privacy policy</Link> | <Link to="/terms" >Terms of Service</Link>{' '}
           </div>

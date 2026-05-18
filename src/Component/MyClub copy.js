@@ -1,60 +1,56 @@
-import { TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import Avatar from "@mui/material/Avatar";
+import CloseIcon from "@mui/icons-material/Close";
+import loader from "../images/loader.gif";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import RssFeedIcon from "@mui/icons-material/RssFeed";
+import AppBar from "@mui/material/AppBar";
+import Dialog from "@mui/material/Dialog";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Slide from "@mui/material/Slide";
+import TextField from "@mui/material/TextField";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { SlideshowLightbox } from "lightbox.js-react";
-import _debounce from "lodash.debounce";
+import "lightbox.js-react/dist/index.css";
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import Slider from "react-slick";
-import loader from "../images/loader.gif";
-import searchimg from "../images/searchimg.png";
-import { BASE_URL } from "./BaseUrl";
-import Loader from "./Loader";
-
 import ReactPlayer from "react-player/lazy";
-import { useDispatch, useSelector } from "react-redux";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Link } from "react-router-dom";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import img from "../Assets/userimg.jpg";
-import { getCount } from "../Store/CountActions";
-import getPoints from "../Store/DashboardMarksActions";
-import satyamimg from "../images/satyam.jpg";
+import { BASE_URL } from "./BaseUrl";
+import Loader from "./Loader";
+import _debounce from "lodash.debounce";
+import { useDispatch, useSelector } from "react-redux";
+import { getgroupCount, getlikedata } from "../Store/CountActions";
 
-const PostlistingPage = () => {
-  const [searchdata, setsearchdata] = useState([]);
-  const [search, setSearch] = useState("");
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+const MyClub = () => {
   const [loading, setLoading] = useState({});
-  const [cancelToken, setCancelToken] = useState(null);
-  const [namedata, setNameData] = useState([]);
-  const [followinfo, setFollowdata] = useState([]);
-  const [likecount, setlikeCount] = useState([]);
-  const loggeduser = localStorage.getItem("userName");
-  const Lastname = localStorage.getItem("Lastname");
+  const [post, setPost] = useState([]);
+  const [Search, setSearch] = useState("");
+  const [groupdata, setgroupData] = useState([]);
   const [likedata, setlikedata] = useState([]);
-  const [userlike, setUserlike] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [comlike, setcomlike] = useState([]);
+  const [open2, setOpen2] = React.useState(false);
+  const [likecount, setlikeCount] = useState([]);
   const [clickedItemId, setClickedItemId] = useState(null);
   const [animate, setAnimate] = useState(null);
-  const [comlike, setcomlike] = useState([]);
-  const longPressTimeout = useRef(null);
-  const { desc } = useParams();
-
-//   console.log(desc);
-
-  useEffect(() => {
-    dispatch(getPoints());
-  }, []);
-
-  const dispatch = useDispatch();
-  const count = useSelector((state) => state.Count.count);
-  const currentPostId = useSelector((state) => state.Count.postId);
-
-  const profile_img = localStorage.getItem("profile_pic");
-
-  const handleTouchEnd = () => {
-    clearTimeout(longPressTimeout.current);
+  const [value, setvalue] = useState({
+    comment: "",
+  });
+  const handleImageLoad = (id) => {
+    // console.log(id)
+    setLoading(false);
   };
+  const longPressTimeout = useRef(null);
 
   const handleTouchStart = (id, userid) => {
     const user_id = localStorage.getItem("user_id");
@@ -68,72 +64,76 @@ const PostlistingPage = () => {
     }
   };
 
-  function getSerachpost() {
-    if (cancelToken) {
-      cancelToken.cancel("Request canceled due to new search");
-    }
+  const handleTouchEnd = () => {
+    clearTimeout(longPressTimeout.current);
+  };
 
-    const newCancelToken = axios.CancelToken.source();
-    setCancelToken(newCancelToken);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
 
-    const searchdata = search;
+  const handleClose = () => {
+    setOpen(false);
+  };
+  // const handleClickOpen2 = (id) => {
+  //     setOpen2(true);
+  //     dispatch(getgroupCount(id))
+  //     getcommentlikeData();
+  // };
+  // const handleClose2 = () => {
+  //     setOpen2(false);
+  // };
 
+  const onhandleClose = () => {
+    dispatch(getgroupCount());
+  };
+
+  const dispatch = useDispatch();
+  const comment = useSelector((state) => state.Count.groupcount);
+  const currentPostId = useSelector((state) => state.Count.grouppostId);
+
+  const settings = {
+    dots: true,
+  };
+  async function getfollowpost() {
     const data = {
-      newsearch: searchdata,
+      user_id: localStorage.getItem("user_id"),
     };
-
     axios
-      .post(`${BASE_URL}/posts_search`, data, {
-        cancelToken: newCancelToken.token,
-      })
+      .post(`${BASE_URL}/follow_group`, data)
       .then((res) => {
-        setsearchdata(res.data);
+        setPost(res.data);
       })
       .catch((err) => {
-        if (axios.isCancel(err)) {
-          // Request was canceled, ignore
-        } else {
-          console.log(err);
-        }
+        console.log(err);
       });
   }
 
-  function getNamepost() {
-    if (cancelToken) {
-      cancelToken.cancel("Request canceled due to new search");
-    }
+  useEffect(() => {
+    getfollowpost();
+  }, []);
 
-    const newCancelToken = axios.CancelToken.source();
-    setCancelToken(newCancelToken);
-
-    const searchdata = search;
-
-    const data = {
-      newsearch: searchdata,
-    };
-
+  async function getgroupdata() {
     axios
-      .post(`${BASE_URL}/name_search`, data, {
-        cancelToken: newCancelToken.token,
-      })
+      .get(`${BASE_URL}/group_all`)
       .then((res) => {
-        setNameData(res.data);
+        setgroupData(res.data);
       })
       .catch((err) => {
-        if (axios.isCancel(err)) {
-          // Request was canceled, ignore
-        } else {
-          console.log(err);
-        }
+        console.log(err);
       });
   }
+
+  useEffect(() => {
+    getgroupdata();
+  }, []);
 
   async function getLikedata() {
     const data = {
       user_id: localStorage.getItem("user_id"),
     };
     axios
-      .post(`${BASE_URL}/post_like_data`, data)
+      .post(`${BASE_URL}/group_post_like_data`, data)
       .then((res) => {
         setlikedata(res.data);
       })
@@ -151,7 +151,7 @@ const PostlistingPage = () => {
       user_id: localStorage.getItem("user_id"),
     };
     axios
-      .post(`${BASE_URL}/dash_post_count`, data)
+      .post(`${BASE_URL}/group_post_count`, data)
       .then((res) => {
         setlikeCount(res.data);
       })
@@ -164,13 +164,13 @@ const PostlistingPage = () => {
     getlikeCount();
   }, []);
 
-  const handleLike = _debounce((id) => {
+  const handlelike = _debounce((id) => {
     const data = {
       post_id: id,
       user_id: localStorage.getItem("user_id"),
     };
     axios
-      .post(`${BASE_URL}/dash_post_like`, data)
+      .post(`${BASE_URL}/group_like`, data)
       .then((res) => {
         getLikedata();
         getlikeCount();
@@ -180,104 +180,12 @@ const PostlistingPage = () => {
       });
   }, 200);
 
-  const onhandleChange = _debounce((e) => {
-    setSearch(e.target.value);
-    // Clear the cache
-    // getSerachpost();
-    // getNamepost()
-  }, 2000);
-
-  const [value, setvalue] = useState({
-    comment: "",
-  });
-
-  useEffect(() => {
-    setSearch(desc);
-  }, []);
-
-  const onhandleclose = () => {
-    dispatch(getCount());
-  };
-  const handleClose = () => {
-    setUserlike("");
-  };
-
-  useEffect(() => {
-    getSerachpost();
-    getNamepost();
-    return () => {
-      setsearchdata([]);
-      setNameData([]);
-    };
-  }, [search]);
-
-  const onhandlechange2 = (event) => {
-    setvalue((prev) => ({ ...prev, [event.target.name]: event.target.value }));
-  };
-
-  const handleLoad = (id) => {
-    console.log(id);
-    setLoading(false);
-  };
-  const followdata = followinfo;
-
-  const onhandleClick = async (id) => {
-    const data = {
-      follow_user_id: id,
-      user_id: localStorage.getItem("user_id"),
-    };
-    if (followdata.some((item) => item.follow_user_id === id)) {
-      axios.post(`${BASE_URL}/unfollow_user`, data);
-      fetchData();
-    } else {
-      axios.post(`${BASE_URL}/follow_user`, data);
-      fetchData();
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(`${BASE_URL}/follow_data`, {
-        user_id: localStorage.getItem("user_id"),
-      });
-
-      setFollowdata(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleImageLoad = (id) => {
-    console.log(id);
-
-    setLoading(false);
-  };
-
-  const settings = {
-    dots: true,
-  };
-
-  const onhandlelikeuser = async (id) => {
-    axios
-      .post(`${BASE_URL}/post_like_user`, { post_id: id })
-      .then((res) => {
-        setUserlike(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   async function getcommentlikeData() {
     const data = {
       user_id: localStorage.getItem("user_id"),
     };
     axios
-      .post(`${BASE_URL}/comment_like_data`, data)
+      .post(`${BASE_URL}/group_comment_like_data`, data)
       .then((res) => {
         setcomlike(res.data);
       })
@@ -285,56 +193,38 @@ const PostlistingPage = () => {
         console.log(err);
       });
   }
-
   useEffect(() => {
     getcommentlikeData();
   }, []);
 
-  return (
-    <div className="Postlisting Main pt70">
-      <div className="mx-2">
-        {desc == ":id" ? (
-          <Autocomplete
-            id="combo-box-demo"
-            options={namedata}
-            getOptionLabel={(option) => option.firstname}
-            sx={{ width: "100%" }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Search Here..."
-                onChange={onhandleChange}
-              />
-            )}
-            renderOption={(props, option) => (
-              <li {...props}>
-                <Link
-                  to={`/profiledetailpage/${option.id}`}
-                  color="inherit"
-                  className="d-flex align-items-center"
-                >
-                  <div>
-                    <Avatar src="/broken-image.jpg" />
-                  </div>
-                  <p className="px-3">
-                    {option.firstname} {option.lastname}
-                  </p>
-                </Link>
-              </li>
-            )}
-            noOptionsText=""
-          />
-        ) : (
-          <TextField
-            label="Search Here..."
-            value={desc}
-            sx={{ width: "100%" }}
-          />
-        )}
-      </div>
+  const onhandlechange = (event) => {
+    setvalue((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+  };
 
-      <div className="">
-        {searchdata?.map((item, index) => {
+  return (
+    <div className="mainDash" style={{ overflow: "hidden" }}>
+      <div
+        className="  mb-4 w-100"
+        style={{
+          position: "fixed",
+          background: "white",
+          left: "0px",
+          top: "0px",
+          zIndex: "2",
+          marginTop: "58px",
+        }}
+      >
+        <TextField
+          className="w-100 "
+          id="outlined-basic"
+          label="Search Group"
+          variant="outlined"
+          onClick={handleClickOpen}
+        />
+      </div>
+      
+      <div style={{ marginTop: "118px" }}>
+        {post?.map((item, index) => {
           const timestampStr = item.createdDate; // Assuming item.createdDate is the timestamp string
           const timestamp = new Date(timestampStr);
 
@@ -392,8 +282,8 @@ const PostlistingPage = () => {
 
             return elements;
           };
-          const originalDate = new Date(item.created_date);
-          return searchdata?.data?.length === 0 ? (
+
+          return post?.data?.length === 0 ? (
             <Loader />
           ) : (
             <div className="talent-post " key={index}>
@@ -402,30 +292,16 @@ const PostlistingPage = () => {
                   <div className="post-img">
                     <SlideshowLightbox iconColor="#000" backgroundColor="#fff">
                       <img
-                        src={
-                          item.profile_image === ""
-                            ? img
-                            : "https://thetalentclub.co.in/upload/profile/" +
-                              item.profile_image
-                        }
+                        src={`https://thetalentclub.co.in/upload/group_images/${item.image}`}
                         alt=""
                       />
                     </SlideshowLightbox>
                   </div>
-                  <Link to={`/profiledetailpage/${item.user_id}`}>
-                    <h4 className="person-name px-2">
-                      {item.firstname} {item.lastname}
-                    </h4>
-                  </Link>
+
+                  <h4 className="person-name px-2">{item.name}</h4>
                 </div>
-                <div onClick={() => onhandleClick(item.user_id)}>
-                  <p className="follow">
-                    {followdata.some(
-                      (ele) => ele.follow_user_id === item.user_id,
-                    )
-                      ? "Following"
-                      : "Follow"}
-                  </p>
+                <div>
+                  <p className="follow">Join</p>
                 </div>
               </div>
 
@@ -434,7 +310,7 @@ const PostlistingPage = () => {
                   {item?.post_images?.[0] &&
                   item.post_images?.[0].endsWith(".mp4") ? (
                     <ReactPlayer
-                      url={`https://thetalentclub.co.in/upload/post_files/${item.post_images?.[0]}`}
+                      url={`https://thetalentclub.co.in/upload/group_post_files/${item.post_images?.[0]}`}
                       loop={false}
                       playing={false}
                       controls={true}
@@ -461,7 +337,7 @@ const PostlistingPage = () => {
                         backgroundColor="#fff"
                       >
                         <img
-                          src={`https://thetalentclub.co.in/upload/post_files/${item?.post_images?.[0]}`}
+                          src={`https://thetalentclub.co.in/upload/group_post_files/${item?.post_images?.[0]}`}
                           alt=""
                           style={{
                             display: "block",
@@ -469,12 +345,13 @@ const PostlistingPage = () => {
                             height: "100%",
                             objectFit: "cover",
                           }}
-                          onLoad={() => handleImageLoad(index)}
+                          onLoad={() => handleImageLoad(item.post_id)}
                         />
                       </SlideshowLightbox>
                     </>
                   )}
                 </div>
+
                 {item.post_images.slice(1).map((item, index) => {
                   return (
                     <div className="post-main-img" id="postclick" key={index}>
@@ -497,7 +374,7 @@ const PostlistingPage = () => {
                         backgroundColor="#fff"
                       >
                         <img
-                          src={`https://thetalentclub.co.in/upload/post_files/${item}`}
+                          src={`https://thetalentclub.co.in/upload/group_post_files/${item}`}
                           alt=""
                           style={{
                             display: "block",
@@ -505,7 +382,7 @@ const PostlistingPage = () => {
                             height: "100%",
                             objectFit: "cover",
                           }}
-                          onLoad={() => handleImageLoad(index)}
+                          onLoad={() => handleImageLoad(item.post_id)}
                         />
                       </SlideshowLightbox>
                     </div>
@@ -515,14 +392,14 @@ const PostlistingPage = () => {
 
               <div
                 className="click-like"
-                id="class1"
+                id="className1"
                 style={{ display: "none" }}
               >
                 <i className="ri-trophy-fill mx-2 text-danger"></i>
               </div>
               <div
                 className="click-dislike"
-                id="class2"
+                id="className2"
                 style={{ display: "none" }}
               >
                 <i className="ri-trophy-line mx-2 text-danger"></i>
@@ -537,7 +414,6 @@ const PostlistingPage = () => {
                         {filteredLike.like_count !== null ? (
                           <p
                             className="like-count"
-                            onClick={() => onhandlelikeuser(item.post_id)}
                             type="button"
                             data-bs-toggle="modal"
                             data-bs-target="#exampleModal2"
@@ -555,49 +431,63 @@ const PostlistingPage = () => {
                   })}
 
                 <div className="post-activity py-1 d-flex justify-content-between align-items-center">
-                  <div>
-                    <i
-                      className={
-                        likedata.some((ele) => ele.post_id === item.post_id)
-                          ? "ri-trophy-fill mx-2"
-                          : "ri-trophy-line mx-2"
-                      }
-                      id="like1"
-                      onClick={() => handleLike(item.post_id)}
-                    ></i>
-
-                    <i
-                      className="ri-chat-1-line mx-2"
-                      onClick={() => dispatch(getCount(item.post_id))}
-                      type="button"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
+                  <div className="d-flex align-items-center">
+                    {/* Like Icon */}
+                    <div
+                      className="d-flex align-items-center mx-2"
+                      style={{ cursor: "pointer" }}
                     >
-                      {" "}
-                    </i>
-                  </div>
-                  <div>
-                    {likecount
-                      ?.filter((ele) => ele.post_id === item.post_id)
-                      .map((filteredLike) => {
-                        return (
-                          <span key={filteredLike.post_id} className="px-2">
-                            {filteredLike.comment_count !== null ? (
-                              <span
-                                className="like-count"
-                                style={{ fontSize: "15px" }}
-                                type="button"
-                                data-bs-toggle="modal"
-                                data-bs-target="#exampleModal2"
-                              >
-                                {filteredLike.comment_count} comment
-                              </span>
-                            ) : (
-                              <span className="like-count">No comment</span>
-                            )}
-                          </span>
-                        );
-                      })}
+                      <i
+                        className={
+                          likedata.some((ele) => ele.post_id === item.post_id)
+                            ? "ri-trophy-fill"
+                            : "ri-trophy-line"
+                        }
+                        id="like1"
+                        onClick={() => handlelike(item.post_id)}
+                        style={{ fontSize: "20px" }}
+                      ></i>
+                    </div>
+
+                    {/* Comment Icon */}
+                    <div
+                      className="d-flex align-items-center mx-2"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <i
+                        className="ri-chat-1-line"
+                        onClick={() => dispatch(getgroupCount(item.post_id))}
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal"
+                        style={{ fontSize: "20px" }}
+                      ></i>
+                      {likecount
+                        ?.filter((ele) => ele.post_id === item.post_id)
+                        .map((filteredLike) => {
+                          return (
+                            <span
+                              key={filteredLike.post_id}
+                              className="px-1 d-flex align-items-center"
+                            >
+                              {filteredLike.comment_count !== null ? (
+                                <span
+                                  className="like-count"
+                                  style={{
+                                    fontSize: "15px",
+                                    cursor: "pointer",
+                                  }}
+                                  type="button"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#exampleModal2"
+                                >
+                                  {filteredLike.comment_count}
+                                </span>
+                              ) : null}
+                            </span>
+                          );
+                        })}
+                    </div>
                   </div>
                 </div>
 
@@ -605,69 +495,44 @@ const PostlistingPage = () => {
                   className="px-2 py-2"
                   style={{ width: "350px", overflow: "scroll" }}
                 >
-                  <p className="post-title m-0 py-1">
-                    <b>{item.title}</b>
-                  </p>
-                  {item.description.includes("#") ? (
-                    renderClickableText(item.description)
-                  ) : (
-                    <p className="item-desc">{item.description}</p>
-                  )}
+                  <p className="post-title m-0 py-1">{item.title}</p>
+                  {/* <p className='post-hash m-0 py-1'>
+                                        {item.description.includes('#') ? (
+                                            renderClickableText(item.description)
+                                        ) : (
+                                            )} 
+                                    </p> */}
+                  <p className="item-desc ">{item.description}</p>
                   <p style={{ fontSize: "12px" }}>
                     {item.createdDate == null ? "--" : formattedDate}
                   </p>
                 </div>
               </div>
 
-              <div
-                className="modal fade"
-                id="exampleModal2"
-                tabIndex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-              >
-                <div className="modal-dialog modal-dialog-centered">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h1 className="modal-title fs-5" id="exampleModalLabel">
-                        User Like
-                      </h1>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                        onClick={handleClose}
-                      ></button>
-                    </div>
-                    <div className="modal-body2 p-2">
-                      {userlike?.data?.map((item, index) => {
-                        return (
-                          <div
-                            className="d-flex align-items-center py-1"
-                            key={index}
-                          >
-                            <div className="post-img">
-                              <img
-                                src={
-                                  item.profile_image === ""
-                                    ? img
-                                    : "https://thetalentclub.co.in/upload/profile/" +
-                                      item.profile_image
-                                }
-                                alt=""
-                              />
+              {/* <div className='modal fade' id='exampleModal2' tabIndex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+                            <div className='modal-dialog modal-fullscreen'>
+                                <div className='modal-content'>
+                                    <div className='modal-header'>
+                                        <h1 className='modal-title fs-5' id='exampleModalLabel'>
+                                            User Like
+                                        </h1>
+                                        <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                    </div>
+                                    <div className='modal-body'>
+
+                                        <div className='d-flex align-items-center py-1' key={index}>
+                                            <div className='post-img'>
+                                                <img src="" alt='' />
+                                            </div>
+                                            <h4 className='person-name px-2'>
+
+                                            </h4>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
-                            <h4 className="person-name px-2">
-                              {item.firstname} {item.lastname}
-                            </h4>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                        </div> */}
 
               <div
                 className="modal fade"
@@ -680,44 +545,87 @@ const PostlistingPage = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h1 className="modal-title fs-5" id="exampleModalLabel">
-                        Comments &nbsp;({count.length})
+                        Comments &nbsp;({comment.length})
                       </h1>
                       <button
                         type="button"
                         className="btn-close"
                         data-bs-dismiss="modal"
                         aria-label="Close"
-                        onClick={onhandleclose}
+                        onClick={onhandleClose}
                       ></button>
                     </div>
-
                     <div className="modal-body" style={{ padding: "0px 10px" }}>
-                      {count?.map((item, index) => {
+                      {comment?.map((item, index) => {
                         return (
                           <div key={index}>
                             <div
-                              className={`comment-box d-flex align-items-center justify-content-between my-2 ${animate === item.id ? "animate__animated animate__fadeOutRight" : ""} ${clickedItemId === item.id ? "bg-lightblue" : ""}`}
-                              key={index}
+                              className={`comment-box d-flex align-items-center justify-content-between my-2 comm-box ${animate === item.id ? "animate__animated animate__fadeOutRight" : ""}  ${clickedItemId === item.id ? "bg-lightblue" : ""}`}
+                              id={`comm-box${item.id}`}
                             >
-                              <button
-                                className="delete-ovr"
-                                onTouchEnd={handleTouchEnd}
-                                onTouchStart={() =>
-                                  handleTouchStart(item.id, item.user_id)
-                                }
-                              >
-                                Touch
-                              </button>
-                              <div>
-                                <p className="name-text">
-                                  {" "}
-                                  {item.firstname} {item.lastname}
-                                </p>
-                                <p className="comment">{item.comment}</p>
-                              </div>
-
+                              <Link to={`/profiledetailpage/${item.user_id}`}>
+                                <button
+                                  className="delete-ovr"
+                                  onTouchEnd={handleTouchEnd}
+                                  onTouchStart={() =>
+                                    handleTouchStart(item.id, item.user_id)
+                                  }
+                                >
+                                  Touch
+                                </button>
+                                <div>
+                                  <p className="name-text">
+                                    {item.firstname} {item.lastname}
+                                  </p>
+                                  <p className="comment">{item.comment}</p>
+                                </div>
+                              </Link>
                               <div className="d-flex">
                                 <div>
+                                  <span
+                                    className="fw-small"
+                                    onClick={() => {
+                                      const selectComment_id = item.id;
+
+                                      const data = {
+                                        comment_id: selectComment_id,
+                                        user_id:
+                                          localStorage.getItem("user_id"),
+                                      };
+                                      if (
+                                        comlike.some(
+                                          (ele) =>
+                                            ele.comment_id === selectComment_id,
+                                        )
+                                      ) {
+                                        axios
+                                          .post(
+                                            `${BASE_URL}/group_comment_like_delete`,
+                                            data,
+                                          )
+                                          .then((res) => {
+                                            dispatch(
+                                              getgroupCount(item.post_id),
+                                            );
+                                            getcommentlikeData();
+                                          });
+                                      } else {
+                                        axios
+                                          .post(
+                                            `${BASE_URL}/group_comment_like`,
+                                            data,
+                                          )
+                                          .then((res) => {
+                                            dispatch(
+                                              getgroupCount(item.post_id),
+                                            );
+                                            getcommentlikeData();
+                                          });
+                                      }
+                                    }}
+                                  >
+                                    <span>{item.like_count} </span>
+                                  </span>
                                   <i
                                     className={
                                       comlike.some(
@@ -742,34 +650,35 @@ const PostlistingPage = () => {
                                       ) {
                                         axios
                                           .post(
-                                            `${BASE_URL}/comment_like_delete`,
+                                            `${BASE_URL}/group_comment_like_delete`,
                                             data,
                                           )
                                           .then((res) => {
-                                            dispatch(getCount(item.post_id));
+                                            dispatch(
+                                              getgroupCount(item.post_id),
+                                            );
                                             getcommentlikeData();
                                           });
                                       } else {
                                         axios
                                           .post(
-                                            `${BASE_URL}/comment_like`,
+                                            `${BASE_URL}/group_comment_like`,
                                             data,
                                           )
                                           .then((res) => {
-                                            dispatch(getCount(item.post_id));
+                                            dispatch(
+                                              getgroupCount(item.post_id),
+                                            );
                                             getcommentlikeData();
                                           });
                                       }
                                     }}
                                   ></i>
-                                  <span className="fw-bold">
-                                    <span>{item.like_count} </span>Like
-                                  </span>
                                 </div>
-                                <div className="mx-2">
+                                {/* <div className="mx-2">
                                   <i className="ri-reply-line"></i>
                                   <span className="fw-bold">Reply</span>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                             <div
@@ -788,11 +697,11 @@ const PostlistingPage = () => {
                                   };
                                   axios
                                     .post(
-                                      `${BASE_URL}/delete_user_comment`,
+                                      `${BASE_URL}/delete_group_comment`,
                                       data,
                                     )
                                     .then((res) => {
-                                      dispatch(getCount(currentPostId));
+                                      dispatch(getgroupCount(currentPostId));
                                       getlikeCount();
                                     })
                                     .catch((err) => {
@@ -805,6 +714,7 @@ const PostlistingPage = () => {
                         );
                       })}
                     </div>
+
                     <div
                       className="modal-footer"
                       style={{ display: "block", position: "relative" }}
@@ -813,7 +723,8 @@ const PostlistingPage = () => {
                         type="text"
                         placeholder="..."
                         name="comment"
-                        onChange={onhandlechange2}
+                        value={value.comment}
+                        onChange={onhandlechange}
                       />
                       <i
                         className="ri-send-plane-2-line sent"
@@ -825,15 +736,18 @@ const PostlistingPage = () => {
                               comment: value.comment,
                             };
                             axios
-                              .post(`${BASE_URL}/add_comment`, data)
+                              .post(`${BASE_URL}/add_group_comment`, data)
                               .then((res) => {
-                                dispatch(getCount(currentPostId));
+                                dispatch(getgroupCount(currentPostId));
                                 getlikeCount();
                               })
                               .catch((err) => {
                                 console.log(err);
                               });
                           }
+                          setvalue({
+                            comment: "",
+                          });
                         }}
                       ></i>
                     </div>
@@ -888,12 +802,12 @@ const PostlistingPage = () => {
                       <div className="Sharelist row align-items-center my-3">
                         <div className="col-2">
                           <div className="post-img">
-                            <img src={satyamimg} alt="" />
+                            <img src="" alt="" />
                           </div>
                         </div>
 
                         <div className="px-2 col-7">
-                          <h4 className="person-name m-0">{loggeduser}</h4>
+                          <h4 className="person-name m-0">d</h4>
                           <p className="user_name m-0">happiest</p>
                         </div>
                         <div className="col-3">
@@ -907,20 +821,95 @@ const PostlistingPage = () => {
             </div>
           );
         })}
-      </div>
 
-      <div>
-        {searchdata.length === 0 ? (
-          <img
-            src={searchimg}
-            width="100%"
-            style={{ marginTop: "50%" }}
-            alt=""
-          />
-        ) : null}
+        <Dialog
+          fullScreen
+          open={open}
+          onClose={handleClose}
+          TransitionComponent={Transition}
+        >
+          <AppBar sx={{ position: "relative", background: "#E73758" }}>
+            <Toolbar>
+              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                Group Search
+              </Typography>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleClose}
+                aria-label="close"
+              >
+                <CloseIcon />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <div className="mx-2 my-3">
+            <TextField
+              className="w-100 "
+              id="outlined-basic"
+              label="Search Group"
+              variant="outlined"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="mygrop-holder">
+            {groupdata
+              ?.filter((item) =>
+                item.title.toLowerCase().includes(Search.toLowerCase()),
+              )
+              .map((item, index) => {
+                return (
+                  <div key={index}>
+                    <div className="px-1 py-2 post-head d-flex align-items-center justify-content-between">
+                      <Link to={`/grouppost/${item.id}`}>
+                        <div className="d-flex align-items-center">
+                          <div className="post-img">
+                            <img
+                              src={
+                                "https://thetalentclub.co.in/upload/group_images/" +
+                                item.image
+                              }
+                              alt=""
+                            />
+                          </div>
+                          <h4 className="person-name px-2">{item.title}</h4>
+                        </div>
+                      </Link>
+                      <MoreVertIcon
+                        className=" dropdown-toggle"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      />
+                      <ul className="dropdown-menu">
+                        <List
+                          sx={{
+                            width: "100%",
+                            maxWidth: 360,
+                            bgcolor: "background.paper",
+                          }}
+                          component="nav"
+                          aria-labelledby="nested-list-subheader"
+                        >
+                          <ListItemButton>
+                            <ListItemIcon>
+                              <RssFeedIcon />
+                            </ListItemIcon>
+                            <Link to={`/grouppost/${item.id}`}>
+                              <ListItemText primary="Group Posts" />
+                            </Link>
+                          </ListItemButton>
+                        </List>
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </Dialog>
       </div>
     </div>
   );
 };
 
-export default PostlistingPage;
+export default MyClub;
