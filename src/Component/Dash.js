@@ -26,6 +26,8 @@ import Loader from "./Loader";
 import { red } from "@mui/material/colors";
 import "../dash.css";
 import { Browser } from "@capacitor/browser";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -59,7 +61,7 @@ const Dash = () => {
   const [advertisement_pages, setadvertisement_pages] = useState(1);
 
   const [show, setShow] = useState(false);
-
+  const deleteuserid = localStorage.getItem(`user_id`);
   const tapedTwice = useRef(false);
 
   const handleTouchStart = (id, userid) => {
@@ -106,7 +108,7 @@ const Dash = () => {
 
     if (scrollTop + clientHeight >= scrollHeight - 1000) {
       getDatapost();
-      console.log("calling........");
+      // console.log("calling........");
     }
   }, 200);
 
@@ -482,11 +484,11 @@ const Dash = () => {
                   className="logo-img"
                   style={{ position: "relative", width: 40, height: 40 }}
                 >
-                  {proloading && item?.profile_image?.trim() && (
+                  {/* {proloading && item?.profile_image?.trim() && (
                     <div>
                       <img src={loader} alt="" />
                     </div>
-                  )}
+                  )} */}
 
                   {/* PROFILE IMAGE */}
                   {item?.profile_image?.trim() && (
@@ -548,7 +550,7 @@ const Dash = () => {
                   </div>
                 </div>
                 <div className="text-end">
-                  <img src={logo} width="100px" alt="logo" />
+                  <img src={logo} width="150px" alt="logo" />
                 </div>
               </div>
             </div>
@@ -773,8 +775,7 @@ const Dash = () => {
                     {item.user_id ==
                     localStorage.getItem(
                       "user_id",
-                    ) ? //   className="follow text-danger" // <p
-                    //   style={{ cursor: "pointer" }}
+                    ) ? //   style={{ cursor: "pointer" }} //   className="follow text-danger" // <p
                     //   onClick={() => deletePost(item.post_id)}
                     // >
                     //   Remove
@@ -926,8 +927,6 @@ const Dash = () => {
                 </div>
 
                 <div className="">
-                
-
                   <div
                     className="px-2 py-2"
                     style={{
@@ -985,43 +984,43 @@ const Dash = () => {
                   </div>
 
                   <div className="post-activity py-1 d-flex justify-content-between align-items-center">
-                     {likecount
-                    ?.filter((ele) => ele.post_id === item.post_id)
-                    .map((filteredLike) => {
-                      return (
-                        <div key={filteredLike.post_id}>
-                          {filteredLike.like_count !== null ? (
-                            <p
-                              className="like-count mb-1"
-                              onClick={() => onhandlelikeuser(item.post_id)}
-                              type="button"
-                              data-bs-toggle="modal"
-                              data-bs-target="#exampleModal2"
-                              style={{
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "5px",
-                              }}
-                            >
-                              {filteredLike.like_count}
-                              <i className="ri-trophy-fill"></i>
-                            </p>
-                          ) : (
-                            <p
-                              className="like-count mb-1"
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "5px",
-                              }}
-                            >
-                              0 <i className="ri-trophy-line"></i>
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
+                    {likecount
+                      ?.filter((ele) => ele.post_id === item.post_id)
+                      .map((filteredLike) => {
+                        return (
+                          <div key={filteredLike.post_id}>
+                            {filteredLike.like_count !== null ? (
+                              <p
+                                className="like-count mb-1"
+                                onClick={() => onhandlelikeuser(item.post_id)}
+                                type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exampleModal2"
+                                style={{
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                }}
+                              >
+                                {filteredLike.like_count}
+                                <i className="ri-trophy-fill"></i>
+                              </p>
+                            ) : (
+                              <p
+                                className="like-count mb-1"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                }}
+                              >
+                                0 <i className="ri-trophy-line"></i>
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
                     <div className="d-flex align-items-center">
                       {/* Like Icon */}
                       <div
@@ -1223,7 +1222,7 @@ const Dash = () => {
                       className={`comment-box d-flex align-items-center justify-content-between my-2 ${animate === item.id ? "animate__animated animate__fadeOutRight" : ""} ${clickedItemId === item.id ? "bg-lightblue" : ""}`}
                       key={index}
                     >
-                      <Link to={`/profiledetailpage/${item.user_id}`}>
+                 
                         <button
                           className="delete-ovr"
                           onTouchEnd={handleTouchEnd}
@@ -1234,15 +1233,38 @@ const Dash = () => {
                           Touch
                         </button>
                         <div>
+                        <Link to={`/profiledetailpage/${item.user_id}`}>
                           <p className="name-text">
                             {" "}
                             {item.firstname} {item.lastname}
                           </p>
-
+                          </Link>
                           <p className="comment">{item.comment}</p>
+                          {deleteuserid == item.user_id && (
+                            <div
+                              onClick={() => {
+                                const data = {
+                                  comment_id: item.id,
+                                };
+                                axios
+                                  .post(`${BASE_URL}/delete_user_comment`, data)
+                                  .then((res) => {
+                                    dispatch(getCount(currentPostId));
+                                    getlikeCount();
+                                  })
+                                  .catch((err) => {
+                                    console.log(err);
+                                  });
+                              }}
+                              title=""
+                              className="active"
+                            >
+                              <DeleteOutlineIcon/>
+                            </div>
+                          )}
                         </div>
-                      </Link>
-                      <div className="d-flex">
+                     
+                     <div className="d-flex flex-column">
                         <div>
                           <span
                             className="fw-small"
@@ -1312,6 +1334,28 @@ const Dash = () => {
                             }}
                           ></i>
                         </div>
+                         {/* {deleteuserid == item.user_id && (
+                            <div
+                              onClick={() => {
+                                const data = {
+                                  comment_id: item.id,
+                                };
+                                axios
+                                  .post(`${BASE_URL}/delete_user_comment`, data)
+                                  .then((res) => {
+                                    dispatch(getCount(currentPostId));
+                                    getlikeCount();
+                                  })
+                                  .catch((err) => {
+                                    console.log(err);
+                                  });
+                              }}
+                              title=""
+                              className="active"
+                            >
+                              <DeleteOutlineIcon/>
+                            </div>
+                          )} */}
                         {/* <div className="mx-2">
                           <i className="ri-reply-line"></i>
                           <span className="fw-bold">Reply</span>

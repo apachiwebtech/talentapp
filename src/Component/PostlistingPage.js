@@ -40,7 +40,7 @@ const PostlistingPage = () => {
   const longPressTimeout = useRef(null);
   const { desc } = useParams();
 
-//   console.log(desc);
+  //   console.log(desc);
 
   useEffect(() => {
     dispatch(getPoints());
@@ -252,7 +252,7 @@ const PostlistingPage = () => {
   }, []);
 
   const handleImageLoad = (id) => {
-    console.log(id);
+    // console.log(id);
 
     setLoading(false);
   };
@@ -297,7 +297,10 @@ const PostlistingPage = () => {
           <Autocomplete
             id="combo-box-demo"
             options={namedata}
-            getOptionLabel={(option) => option.firstname}
+            // getOptionLabel={(option) => option.firstname}
+            getOptionLabel={(option) =>
+              `${option.firstname || ""} ${option.lastname || ""}`
+            }
             sx={{ width: "100%" }}
             renderInput={(params) => (
               <TextField
@@ -306,22 +309,64 @@ const PostlistingPage = () => {
                 onChange={onhandleChange}
               />
             )}
-            renderOption={(props, option) => (
-              <li {...props}>
-                <Link
-                  to={`/profiledetailpage/${option.id}`}
-                  color="inherit"
-                  className="d-flex align-items-center"
-                >
-                  <div>
-                    <Avatar src="/broken-image.jpg" />
-                  </div>
-                  <p className="px-3">
-                    {option.firstname} {option.lastname}
-                  </p>
-                </Link>
-              </li>
-            )}
+            renderOption={(props, option) => {
+              const firstLetter = option?.firstname
+                ? option.firstname.charAt(0).toUpperCase()
+                : "";
+
+              const lastLetter = option?.lastname
+                ? option.lastname.charAt(0).toUpperCase()
+                : "";
+
+              return (
+                <li {...props}>
+                  <Link
+                    to={`/profiledetailpage/${option.id}`}
+                    color="inherit"
+                    className="d-flex align-items-center w-100"
+                    style={{ textDecoration: "none", color: "#000" }}
+                  >
+                    <div>
+                      {option?.profile_image ? (
+                        <Avatar
+                          src={`https://thetalentclub.co.in/upload/profile/${option.profile_image}`}
+                          alt={option.firstname}
+                          sx={{
+                            width: 45,
+                            height: 45,
+                          }}
+                        />
+                      ) : (
+                        <Avatar
+                          sx={{
+                            width: 45,
+                            height: 45,
+                            bgcolor: "#1976d2",
+                            fontSize: "15px",
+                            fontWeight: "600",
+                          }}
+                        >
+                          {firstLetter}
+                          {lastLetter}
+                        </Avatar>
+                      )}
+                    </div>
+
+                    <div className="px-3">
+                      <p
+                        style={{
+                          margin: 0,
+                          fontWeight: "600",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {option.firstname} {option.lastname}
+                      </p>
+                    </div>
+                  </Link>
+                </li>
+              );
+            }}
             noOptionsText=""
           />
         ) : (

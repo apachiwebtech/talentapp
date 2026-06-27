@@ -28,6 +28,7 @@ import logo from "../images/logo.png";
 import satyamimg from "../images/satyam.jpg";
 import DashBarProgress from "./DashBarProgress";
 import Loader from "./Loader";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Browser } from "@capacitor/browser";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -55,7 +56,7 @@ const ProfileDetailPage = () => {
   const [expandedTitle, setExpandedTitle] = useState({});
   const param = useParams();
   const { profileid } = param;
-
+  const deleteuserid = localStorage.getItem(`user_id`);
   const loggeduser = localStorage.getItem("userName");
   const handleTouchStart = (event, id) => {
     event.preventDefault();
@@ -429,12 +430,12 @@ const ProfileDetailPage = () => {
                         {item.bio ? item.bio : "No bio added"}
                       </p>
 
-                      <p
+                      {/* <p
                         className="edit-p mt-3 py-1 share-profile"
                         onClick={() => Shareprofile(item.id)}
                       >
                         Share Profile <i class="ri-share-forward-line"></i>
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </div>
@@ -947,6 +948,28 @@ const ProfileDetailPage = () => {
                                     {item.firstname} {item.lastname}
                                   </p>
                                   <p className="comment">{item.comment}</p>
+                                   {deleteuserid == item.user_id && (
+                                    <div
+                                      onClick={() => {
+                                        const data = {
+                                          comment_id: item.id,
+                                        };
+                                        axios
+                                          .post(`${BASE_URL}/delete_user_comment`, data)
+                                          .then((res) => {
+                                            dispatch(getCount(currentPostId));
+                                            getlikeCount();
+                                          })
+                                          .catch((err) => {
+                                            console.log(err);
+                                          });
+                                      }}
+                                      title=""
+                                      className="active"
+                                    >
+                                      <DeleteOutlineIcon/>
+                                    </div>
+                                  )}
                                 </div>
 
                                 <div className="d-flex">

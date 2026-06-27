@@ -19,7 +19,7 @@ const DashboardMarksSlice = createSlice({
             state.cat1 = newDashScore.cat1;
             state.cat2 = newDashScore.cat2;
             state.cat3 = newDashScore.cat3;
-            console.log(newDashScore)
+            // console.log(newDashScore)
         }
     }
 

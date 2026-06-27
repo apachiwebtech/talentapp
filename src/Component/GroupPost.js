@@ -126,7 +126,7 @@ const GroupPost = () => {
         // Convert Blob to File with the desired extension
         const fileName = `compressedFile.${file.type.split('/').pop()}`;
         convertedFile = new File([compressedFile], fileName, { type: file.type });
-        await setImage(convertedFile);
+       setImage(convertedFile);
       }
 
 
@@ -154,7 +154,10 @@ const GroupPost = () => {
         return response.json();
       })
       .then((data) => {
-        const filteredData = data.filter((element) => element.id == groupid);
+       const filteredData = data
+  .filter((element) => element.id == groupid)
+  .reverse();
+        // const filteredData = data.filter((element) => element.id == groupid);
         // const filteredData = data
         // console.log(filteredData)
         setPost(filteredData);
@@ -274,8 +277,11 @@ const GroupPost = () => {
     event.preventDefault();
 
 
-
-    if (value.title !== "" && value.discription !== "" && image !== "") {
+if (
+  value.title.trim() !== "" &&
+  value.description.trim() !== "" &&
+  image
+) {
 
       setprogress(true)
       setHide("Please Wait...")
@@ -313,12 +319,23 @@ const GroupPost = () => {
             .catch((error) => {
               console.error('Error uploading image:', error);
             })
-            .finally(() => {
-              setprogress(false)
-              setHide("")
-              getgroupdata()
-              setOpen(false);
-            })
+           .finally(() => {
+  setprogress(false);
+  setHide("");
+
+  getgroupdata();
+
+  setvalue({
+    comment: '',
+    title: '',
+    description: '',
+    user_id: localStorage.getItem('user_id'),
+  });
+
+  setImage(null);
+
+  setOpen(false);
+})
         }, 3000);
       });
     }

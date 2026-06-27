@@ -2,4 +2,4 @@
 export const BASE_URL = "https://nodejs.thetalentclub.co.in";
 export const IMG_ADVERTSIMENT_URL = "https://thetalentclub.co.in/weblogin/";
 export const IMG_URL = "https://thetalentclub.co.in/upload";
-export const  version = "1.0.1"
+export const  version = "15.0.0";
